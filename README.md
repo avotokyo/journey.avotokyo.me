@@ -9,9 +9,9 @@ React · TypeScript · Vite+ · Ant Design · 高德地图 JS API
 ## 本地开发
 
 ```bash
-pnpm install
+vp install
 cp .env.example .env   # 填入高德 Web 端 JS API Key
-pnpm dev
+vp run dev
 ```
 
 景点数据在 `src/data/spots.json`，字段说明见 `src/data/spots.ts`。
