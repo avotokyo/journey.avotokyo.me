@@ -174,11 +174,8 @@ function WorldMap({
   }, [onSpotClick]);
 
   useEffect(() => {
-    if (!ready) return;
-    const controller = controllerRef.current;
-    if (!controller) return;
-    if (activeSpot) controller.focusSpot(activeSpot);
-    else controller.showOverview();
+    if (!ready || !activeSpot) return;
+    controllerRef.current?.focusSpot(activeSpot);
   }, [ready, activeSpot]);
 
   useEffect(() => {
