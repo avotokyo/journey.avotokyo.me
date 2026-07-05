@@ -10,21 +10,21 @@
     "prepare": "vp config"
   },
   "dependencies": {
-    "@amap/amap-jsapi-loader": "^1.0.1",
-    "@ant-design/icons": "^6.3.2",
-    "antd": "^6.5.0",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
-    "react-router-dom": "^7.18.1"
+    "@amap/amap-jsapi-loader": "1.0.1",
+    "@ant-design/icons": "6.3.2",
+    "antd": "6.5.0",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "react-router-dom": "7.18.1"
   },
   "devDependencies": {
-    "@types/amap-js-api": "^1.4.16",
-    "@types/node": "^26.1.0",
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.3",
-    "typescript": "~6.0.2",
-    "vite-plus": "catalog:"
+    "@types/amap-js-api": "1.4.16",
+    "@types/node": "26.1.0",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.3",
+    "typescript": "6.0.3",
+    "vite-plus": "0.2.2"
   },
   "devEngines": {
     "packageManager": {

@@ -2,8 +2,3 @@ allowBuilds:
   esbuild: true
 catalog:
   vite-plus: 0.2.2
-peerDependencyRules:
-  allowAny:
-    - vite
-  allowedVersions:
-    vite: "*"
