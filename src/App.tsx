@@ -27,8 +27,7 @@ import {
 import type { GlobalToken } from "antd/es/theme/interface";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
-import { WorldMapController } from "./amap";
-import { DRAWER_WIDTH } from "./constants";
+import { DRAWER_WIDTH, WorldMapController } from "./amap";
 import {
   closeSpot,
   formatSpotDateTime,
