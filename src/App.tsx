@@ -5,14 +5,12 @@ import { HashRouter, Route, Routes, useNavigate, useParams } from "react-router-
 import Sidebar from "./components/Sidebar.tsx";
 import SpotDetailDrawer from "./components/SpotDetailDrawer.tsx";
 import WorldMap from "./components/WorldMap.tsx";
-import { getAllSpots, getSpotById, type SiteProfile, type Spot } from "./data/schema.ts";
-import site from "./data/site.json";
+import { getAllSpots, getSpotById, type Spot } from "./data/schema.ts";
 import spotsData from "./data/spots.json";
 
 function AppLayout() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const profile = site as SiteProfile;
   const spots = useMemo(() => getAllSpots(spotsData.spots as Spot[]), []);
   const activeSpot = id ? getSpotById(spots, id) : undefined;
 
@@ -25,7 +23,7 @@ function AppLayout() {
 
   return (
     <Layout className="map-app">
-      <Sidebar profile={profile} spots={spots} />
+      <Sidebar spots={spots} />
       <Layout.Content className="map-stage">
         <WorldMap spots={spots} activeSpot={activeSpot} onSpotClick={handleSpotClick} />
         <SpotDetailDrawer spot={activeSpot} open={!!activeSpot} onClose={handleClose} />

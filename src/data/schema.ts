@@ -9,12 +9,6 @@ export interface Spot {
   photos?: string[];
 }
 
-export interface SiteProfile {
-  name: string;
-  subtitle: string;
-  links?: Array<{ label: string; url: string }>;
-}
-
 export function formatSpotDateTime(spot: Spot): string {
   return spot.time ? `${spot.date} ${spot.time}` : spot.date;
 }

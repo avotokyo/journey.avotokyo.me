@@ -1,17 +1,16 @@
 import { Flex, Layout, Menu, Space, Typography } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 
-import type { SiteProfile, Spot } from "../data/schema.ts";
+import type { Spot } from "../data/schema.ts";
 import { groupSpotsByDate } from "../data/schema.ts";
 
 const { Text, Title, Link } = Typography;
 
 interface SidebarProps {
-  profile: SiteProfile;
   spots: Spot[];
 }
 
-export default function Sidebar({ profile, spots }: SidebarProps) {
+export default function Sidebar({ spots }: SidebarProps) {
   const { id: activeId } = useParams();
   const navigate = useNavigate();
   const groups = groupSpotsByDate(spots);
@@ -36,18 +35,12 @@ export default function Sidebar({ profile, spots }: SidebarProps) {
       <Flex vertical gap={16} className="sidebar-inner">
         <Space direction="vertical" size={4}>
           <Title level={4} style={{ margin: 0 }}>
-            {profile.name}
+            牛油果旅行记✈️
           </Title>
-          <Text type="secondary">{profile.subtitle}</Text>
-          {profile.links && profile.links.length > 0 && (
-            <Space size="middle" wrap>
-              {profile.links.map((item) => (
-                <Link key={item.url} href={item.url} target="_blank">
-                  {item.label}
-                </Link>
-              ))}
-            </Space>
-          )}
+          <Text type="secondary">景点 · 时间 · 照片 · 随笔</Text>
+          <Link href="https://github.com" target="_blank">
+            GitHub
+          </Link>
         </Space>
 
         <Menu
