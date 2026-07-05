@@ -2,7 +2,7 @@ import { defineConfig } from "vite-plus";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: react(),
   staged: {
     "*": "vp check --fix",
   },
@@ -11,5 +11,12 @@ export default defineConfig({
     jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],
     rules: { "vite-plus/prefer-vite-plus-imports": "error" },
     options: { typeAware: true, typeCheck: true },
+  },
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: true,
+      },
+    },
   },
 });
