@@ -72,7 +72,7 @@ export interface POIResult {
   type: string;
 }
 
-export async function searchPOI(keyword: string, city = "东京"): Promise<POIResult[]> {
+export async function searchPOI(keyword: string, city = "北京"): Promise<POIResult[]> {
   const data = await amapFetch("/v3/place/text", {
     keywords: keyword,
     city,
@@ -122,7 +122,7 @@ export async function direction(
   origin: [number, number],
   destination: [number, number],
   mode: TransportMode,
-  city = "东京",
+  city = "北京",
 ): Promise<DirectionResult | null> {
   const originStr = `${origin[0]},${origin[1]}`;
   const destStr = `${destination[0]},${destination[1]}`;

@@ -1,35 +1,35 @@
 {
   "places": [
     {
-      "id": "tokyo-residence",
-      "name": "东京",
-      "location": [139.6917, 35.6895],
+      "id": "beijing-residence",
+      "name": "北京",
+      "location": [116.4074, 39.9042],
       "category": "residence",
       "notes": "现居地"
     },
     {
-      "id": "nrt-airport",
-      "name": "成田国际机场",
-      "location": [140.3929, 35.772],
+      "id": "pek-airport",
+      "name": "首都国际机场",
+      "location": [116.584556, 40.080111],
       "category": "airport"
     },
     {
-      "id": "hnd-airport",
-      "name": "羽田机场",
-      "location": [139.7798, 35.5494],
+      "id": "pkx-airport",
+      "name": "大兴国际机场",
+      "location": [116.410556, 39.509167],
       "category": "airport"
     },
     {
-      "id": "kyoto-wishlist",
-      "name": "京都",
-      "location": [135.7681, 35.0116],
+      "id": "hangzhou-wishlist",
+      "name": "杭州",
+      "location": [120.1551, 30.2741],
       "category": "wishlist",
-      "notes": "下次想去"
+      "notes": "下次想去西湖"
     },
     {
-      "id": "osaka-wishlist",
-      "name": "大阪",
-      "location": [135.5023, 34.6937],
+      "id": "chengdu-wishlist",
+      "name": "成都",
+      "location": [104.0665, 30.5723],
       "category": "wishlist"
     }
   ]

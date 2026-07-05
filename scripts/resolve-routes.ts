@@ -62,8 +62,8 @@ async function fetchDirection(
     destination: `${destination[0]},${destination[1]}`,
   });
   if (mode === "transit") {
-    params.set("city", "东京");
-    params.set("cityd", "东京");
+    params.set("city", "北京");
+    params.set("cityd", "北京");
   }
 
   const res = await fetch(`${BASE_URL}${endpoints[mode]}?${params}`);

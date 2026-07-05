@@ -41,7 +41,7 @@ export class WorldMapController {
 
     this.map = new AMap.Map(container, {
       zoom: options?.zoom ?? 5,
-      center: options?.center ?? [139.6917, 35.6895],
+      center: options?.center ?? [116.4074, 39.9042],
       viewMode: "2D",
       mapStyle: MAP_STYLES[0],
       showLabel: true,
