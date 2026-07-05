@@ -1,7 +1,7 @@
 import { CopyOutlined } from "@ant-design/icons";
-import { Col, Descriptions, Drawer, Empty, Image, Row, Tag, Typography, message } from "antd";
+import { Col, Descriptions, Drawer, Empty, Image, Row, Typography, message } from "antd";
 import type { Spot } from "../data/schema.ts";
-import { CATEGORY_COLORS, CATEGORY_LABELS, formatSpotDateTime } from "../data/schema.ts";
+import { formatSpotDateTime } from "../data/schema.ts";
 
 const { Paragraph, Title } = Typography;
 
@@ -29,7 +29,6 @@ export default function SpotDetailDrawer({ spot, open, onClose }: SpotDetailDraw
       mask={false}
       rootClassName="detail-drawer"
       title={spot.name}
-      extra={<Tag color={CATEGORY_COLORS[spot.category]}>{CATEGORY_LABELS[spot.category]}</Tag>}
       footer={
         <Typography.Link onClick={() => void copyLink()}>
           <CopyOutlined /> 复制链接

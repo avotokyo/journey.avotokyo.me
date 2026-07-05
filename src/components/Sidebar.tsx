@@ -1,7 +1,7 @@
 import { Flex, Layout, Menu, Space, Typography } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import type { SiteProfile, Spot } from "../data/schema.ts";
-import { CATEGORY_LABELS, groupSpotsByDate } from "../data/schema.ts";
+import { groupSpotsByDate } from "../data/schema.ts";
 
 const { Text, Title, Link } = Typography;
 
@@ -24,7 +24,7 @@ export default function Sidebar({ profile, spots }: SidebarProps) {
       label: spot.name,
       extra: (
         <Text type="secondary" style={{ fontSize: 12 }}>
-          {CATEGORY_LABELS[spot.category]}
+          {spot.time ?? ""}
         </Text>
       ),
     })),

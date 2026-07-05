@@ -1,13 +1,13 @@
-import type { PlaceCategory, Spot } from "../../data/schema.ts";
-import { CATEGORY_COLORS } from "../../data/schema.ts";
+import type { Spot } from "../../data/schema.ts";
 import { loadAMap } from "./loader.ts";
 
 const MAP_STYLES = ["amap://styles/whitesmoke", "amap://styles/normal"] as const;
+const DOT_COLOR = "#f97316";
 
-function createDotElement(category: PlaceCategory, highlighted = false): HTMLDivElement {
+function createDotElement(): HTMLDivElement {
   const el = document.createElement("div");
-  el.className = `map-dot map-dot-${category}${highlighted ? " map-dot-highlight" : ""}`;
-  el.style.setProperty("--dot-color", CATEGORY_COLORS[category]);
+  el.className = "map-dot";
+  el.style.setProperty("--dot-color", DOT_COLOR);
   return el;
 }
 
@@ -16,13 +16,6 @@ export class WorldMapController {
   private markers: AMap.Marker[] = [];
   private infoWindow: AMap.InfoWindow | null = null;
   private spots: Spot[] = [];
-  private activeCategories = new Set<PlaceCategory>([
-    "visited",
-    "stay",
-    "residence",
-    "airport",
-    "wishlist",
-  ]);
   private styleIndex = 0;
   private onSpotClick?: (spot: Spot) => void;
 
@@ -50,15 +43,6 @@ export class WorldMapController {
     this.infoWindow = new AMap.InfoWindow({ offset: new AMap.Pixel(0, -12) });
     this.renderMarkers();
     if (!options?.center) this.fitAll();
-  }
-
-  setCategoryFilter(categories: Set<PlaceCategory>): void {
-    this.activeCategories = categories;
-    this.renderMarkers();
-  }
-
-  getActiveCategories(): Set<PlaceCategory> {
-    return new Set(this.activeCategories);
   }
 
   fitAll(): void {
@@ -91,12 +75,9 @@ export class WorldMapController {
     this.markers = [];
 
     for (const spot of this.spots) {
-      if (!this.activeCategories.has(spot.category)) continue;
-
-      const highlighted = spot.category === "residence";
       const marker = new AMap.Marker({
         position: spot.location,
-        content: createDotElement(spot.category, highlighted),
+        content: createDotElement(),
         offset: new AMap.Pixel(-6, -6),
         title: spot.name,
       });

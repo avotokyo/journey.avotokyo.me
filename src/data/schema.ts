@@ -1,27 +1,8 @@
-export type PlaceCategory = "visited" | "stay" | "residence" | "airport" | "wishlist";
-
-export const CATEGORY_LABELS: Record<PlaceCategory, string> = {
-  visited: "到访",
-  stay: "停留",
-  residence: "居住",
-  airport: "机场",
-  wishlist: "心愿",
-};
-
-export const CATEGORY_COLORS: Record<PlaceCategory, string> = {
-  visited: "#22c55e",
-  stay: "#a855f7",
-  residence: "#f97316",
-  airport: "#38bdf8",
-  wishlist: "#f472b6",
-};
-
 export interface Spot {
   id: string;
   name: string;
   address?: string;
   location: [number, number];
-  category: PlaceCategory;
   date: string;
   time?: string;
   essay?: string;
