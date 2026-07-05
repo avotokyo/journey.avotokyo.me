@@ -41,8 +41,14 @@ export default function WorldMap({ spots, activeSpot, onSpotClick }: WorldMapPro
   }, [spots, onSpotClick]);
 
   useEffect(() => {
-    if (!ready || !activeSpot) return;
-    controllerRef.current?.focusSpot(activeSpot);
+    if (!ready) return;
+    const controller = controllerRef.current;
+    if (!controller) return;
+    if (activeSpot) {
+      controller.focusSpot(activeSpot);
+    } else {
+      controller.showOverview();
+    }
   }, [ready, activeSpot]);
 
   const map = controllerRef.current;

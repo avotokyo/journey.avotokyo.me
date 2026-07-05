@@ -22,6 +22,9 @@ const MAP_STYLES = ["amap://styles/whitesmoke", "amap://styles/normal"] as const
 const DOT_SIZE = 20;
 const DOT_COLOR = "#f97316";
 const FOCUS_ZOOM = 16;
+const CHINA_CENTER: [number, number] = [105.0, 36.0];
+const CHINA_ZOOM = 4;
+const OVERVIEW_PADDING: [number, number, number, number] = [80, 80, 80, 340];
 const DRAWER_PADDING: [number, number, number, number] = [80, 400, 80, 80];
 
 function createDotElement(): HTMLDivElement {
@@ -55,20 +58,25 @@ export class WorldMapController {
     this.onSpotClick = options?.onSpotClick;
 
     this.map = new AMap.Map(container, {
-      zoom: options?.zoom ?? 5,
-      center: options?.center ?? [116.4074, 39.9042],
+      zoom: options?.zoom ?? CHINA_ZOOM,
+      center: options?.center ?? CHINA_CENTER,
       viewMode: "2D",
       mapStyle: MAP_STYLES[0],
       showLabel: true,
     });
 
     this.renderMarkers();
-    if (!options?.center) this.fitAll();
+    if (!options?.center) this.showOverview();
+  }
+
+  showOverview(): void {
+    if (!this.map) return;
+    this.map.setZoomAndCenter(CHINA_ZOOM, CHINA_CENTER);
   }
 
   fitAll(): void {
     if (!this.map || this.markers.length === 0) return;
-    this.map.setFitView(this.markers, false, [80, 80, 80, 340]);
+    this.map.setFitView(this.markers, false, OVERVIEW_PADDING);
   }
 
   focusSpot(spot: Spot): void {
@@ -89,7 +97,7 @@ export class WorldMapController {
   }
 
   resetView(): void {
-    this.fitAll();
+    this.showOverview();
   }
 
   private renderMarkers(): void {
