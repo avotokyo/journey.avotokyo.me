@@ -5,10 +5,11 @@ import MapControls from "./MapControls.tsx";
 
 interface WorldMapProps {
   spots: Spot[];
+  activeSpot?: Spot;
   onSpotClick?: (spot: Spot) => void;
 }
 
-export default function WorldMap({ spots, onSpotClick }: WorldMapProps) {
+export default function WorldMap({ spots, activeSpot, onSpotClick }: WorldMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const controllerRef = useRef<WorldMapController | null>(null);
   const [ready, setReady] = useState(false);
@@ -36,6 +37,11 @@ export default function WorldMap({ spots, onSpotClick }: WorldMapProps) {
       setReady(false);
     };
   }, [spots, onSpotClick]);
+
+  useEffect(() => {
+    if (!ready || !activeSpot) return;
+    controllerRef.current?.focusSpot(activeSpot);
+  }, [ready, activeSpot]);
 
   const map = controllerRef.current;
 

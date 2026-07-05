@@ -11,9 +11,13 @@ function createDotElement(): HTMLDivElement {
   return el;
 }
 
+const FOCUS_ZOOM = 16;
+const DRAWER_PADDING: [number, number, number, number] = [80, 400, 80, 80];
+
 export class WorldMapController {
   private map: AMap.Map | null = null;
   private markers: AMap.Marker[] = [];
+  private markerById = new Map<string, AMap.Marker>();
   private infoWindow: AMap.InfoWindow | null = null;
   private spots: Spot[] = [];
   private styleIndex = 0;
@@ -50,10 +54,21 @@ export class WorldMapController {
     this.map.setFitView(this.markers, false, [80, 80, 80, 340]);
   }
 
-  focusSpot(spot: Spot): void {
+  focusSpot(spot: Spot, options?: { showInfo?: boolean }): void {
     if (!this.map) return;
-    this.map.setZoomAndCenter(14, spot.location);
-    this.openInfo(spot);
+
+    const marker = this.markerById.get(spot.id);
+    if (marker) {
+      this.map.setFitView([marker], false, DRAWER_PADDING, FOCUS_ZOOM);
+    } else {
+      this.map.setZoomAndCenter(FOCUS_ZOOM, spot.location);
+    }
+
+    if (options?.showInfo) {
+      this.openInfo(spot);
+    } else {
+      this.infoWindow?.close();
+    }
   }
 
   toggleMapStyle(): void {
@@ -73,6 +88,7 @@ export class WorldMapController {
       this.map.remove(marker);
     }
     this.markers = [];
+    this.markerById.clear();
 
     for (const spot of this.spots) {
       const marker = new AMap.Marker({
@@ -83,12 +99,12 @@ export class WorldMapController {
       });
 
       marker.on("click", () => {
-        this.openInfo(spot);
         this.onSpotClick?.(spot);
       });
 
       this.map!.add(marker);
       this.markers.push(marker);
+      this.markerById.set(spot.id, marker);
     }
   }
 
@@ -111,6 +127,7 @@ export class WorldMapController {
       this.map = null;
     }
     this.markers = [];
+    this.markerById.clear();
     this.infoWindow = null;
   }
 }

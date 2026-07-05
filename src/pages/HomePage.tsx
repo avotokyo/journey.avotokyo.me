@@ -24,7 +24,7 @@ export default function HomePage() {
     <Layout className="map-app">
       <Sidebar profile={profile} spots={spots} />
       <Layout.Content className="map-stage">
-        <WorldMap spots={spots} onSpotClick={handleSpotClick} />
+        <WorldMap spots={spots} activeSpot={activeSpot} onSpotClick={handleSpotClick} />
         <SpotDetailDrawer spot={activeSpot} open={!!activeSpot} onClose={handleClose} />
       </Layout.Content>
     </Layout>
