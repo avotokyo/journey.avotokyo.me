@@ -3,7 +3,7 @@
  *
  * 职责：
  * - 懒加载高德 JS API（单例 Promise，避免重复请求）
- * - 在地图上渲染景点标记（自定义圆点）
+ * - 在地图上渲染景点标记（Ant Design Badge 状态点，经 React 挂载）
  * - 管理两种视图：中国全景概览 / 选中景点街道级聚焦
  *
  * 默认显示中国全景，选中景点后放大至街道级并预留右侧抽屉空间。
@@ -11,6 +11,7 @@
 import { load } from "@amap/amap-jsapi-loader";
 
 import type { Spot } from "./data/spots";
+import { MarkerMountManager } from "./markerMount";
 
 /** 高德 API 加载 Promise 缓存，全局只加载一次 */
 let amapPromise: Promise<typeof AMap> | null = null;
@@ -30,10 +31,6 @@ function loadAMap(): Promise<typeof AMap> {
   return amapPromise;
 }
 
-/** 标记圆点尺寸与颜色 */
-const DOT_SIZE = 20;
-const DOT_COLOR = "#f97316";
-
 /** 聚焦景点时的目标缩放级别（街道级） */
 const FOCUS_ZOOM = 16;
 /** 中国全景视图的中心点 [经度, 纬度] */
@@ -46,27 +43,14 @@ const CHINA_ZOOM = 4;
  */
 const DRAWER_PADDING: [number, number, number, number] = [80, 400, 80, 80];
 
-/** 创建自定义圆点标记，圆心对准坐标 */
-function createDotElement(): HTMLDivElement {
-  const el = document.createElement("div");
-  Object.assign(el.style, {
-    width: `${DOT_SIZE}px`,
-    height: `${DOT_SIZE}px`,
-    borderRadius: "50%",
-    background: DOT_COLOR,
-    border: "3px solid #fff",
-    boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
-    cursor: "pointer",
-    transition: "transform 0.15s",
-  });
-  el.addEventListener("mouseenter", () => {
-    el.style.transform = "scale(1.3)";
-  });
-  el.addEventListener("mouseleave", () => {
-    el.style.transform = "";
-  });
-  return el;
-}
+/** 地图标记样式，由 React 侧 theme token 注入 */
+export type MarkerStyleConfig = {
+  color: string;
+  activeColor: string;
+  borderColor: string;
+  boxShadow: string;
+  motionDurationFast: string;
+};
 
 /**
  * 地图控制器：封装 AMap.Map 实例的生命周期与交互逻辑。
@@ -74,28 +58,36 @@ function createDotElement(): HTMLDivElement {
  * 使用方式：
  * 1. init() 初始化地图并渲染标记
  * 2. focusSpot() / showOverview() 切换视图
- * 3. destroy() 组件卸载时释放资源
+ * 3. setActiveSpot() 高亮当前选中标记
+ * 4. destroy() 组件卸载时释放资源
  */
 export class WorldMapController {
   private map: AMap.Map | null = null;
   private markers: AMap.Marker[] = [];
   /** 景点 id → 标记实例，用于快速定位 */
   private markerById = new Map<string, AMap.Marker>();
+  private markerMounts: MarkerMountManager | null = null;
+  private markerStyle: MarkerStyleConfig | null = null;
+  private activeSpotId: string | null = null;
   private onSpotClick?: (spot: Spot) => void;
 
   /**
    * 初始化地图实例并在其上渲染所有景点标记。
    * @param container 地图挂载的 DOM 容器
    * @param spots 景点列表
+   * @param markerStyle 标记样式（来自 Ant Design token）
    * @param onSpotClick 点击标记时的回调
    */
   async init(
     container: HTMLElement,
     spots: Spot[],
+    markerStyle: MarkerStyleConfig,
     onSpotClick?: (spot: Spot) => void,
   ): Promise<void> {
     const AMap = await loadAMap();
     this.onSpotClick = onSpotClick;
+    this.markerStyle = markerStyle;
+    this.markerMounts = new MarkerMountManager(markerStyle);
 
     this.map = new AMap.Map(container, {
       zoom: CHINA_ZOOM,
@@ -130,20 +122,29 @@ export class WorldMapController {
     }
   }
 
+  /** 高亮当前选中的地图标记 */
+  setActiveSpot(spotId: string | null): void {
+    this.activeSpotId = spotId;
+    this.markerMounts?.setActiveSpot(spotId);
+  }
+
   /** 清除旧标记并重新渲染，保持 markerById 索引同步 */
   private renderMarkers(spots: Spot[]): void {
-    if (!this.map) return;
+    if (!this.map || !this.markerMounts || !this.markerStyle) return;
 
     for (const marker of this.markers) {
       this.map.remove(marker);
     }
     this.markers = [];
     this.markerById.clear();
+    this.markerMounts.destroy();
+    this.markerMounts = new MarkerMountManager(this.markerStyle);
 
     for (const spot of spots) {
+      const content = this.markerMounts.createContainer(spot.id, spot.id === this.activeSpotId);
       const marker = new AMap.Marker({
         position: spot.location,
-        content: createDotElement(),
+        content,
         anchor: "center",
         title: spot.name,
       });
@@ -162,5 +163,9 @@ export class WorldMapController {
     this.map = null;
     this.markers = [];
     this.markerById.clear();
+    this.markerMounts?.destroy();
+    this.markerMounts = null;
+    this.markerStyle = null;
+    this.activeSpotId = null;
   }
 }

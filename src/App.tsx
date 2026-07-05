@@ -8,6 +8,8 @@
  * - overviewTick 用于点击标题时触发地图回到全景（即使 Hash 未变化）
  */
 import {
+  App as AntApp,
+  Button,
   Col,
   Descriptions,
   Drawer,
@@ -19,9 +21,9 @@ import {
   Row,
   Space,
   Typography,
-  message,
+  theme,
 } from "antd";
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import { WorldMapController } from "./amap";
 import {
@@ -39,6 +41,9 @@ import {
 const { Text, Title, Paragraph, Link } = Typography;
 
 export default function App() {
+  const { token } = theme.useToken();
+  const { message } = AntApp.useApp();
+
   // 从 Hash 读取当前选中景点 id，Hash 变化时自动重渲染
   const spotId = useSyncExternalStore(subscribeSpotId, getSpotIdFromHash);
   const activeSpot = spotId ? getSpotById(spotId) : undefined;
@@ -51,7 +56,7 @@ export default function App() {
   const sortedDates = [...groups.keys()].sort((a, b) => b.localeCompare(a));
   const menuItems = sortedDates.map((date) => ({
     type: "group" as const,
-    label: date,
+    label: <Text type="secondary">{date}</Text>,
     children: groups.get(date)!.map((spot) => ({
       key: spot.id,
       label: spot.name,
@@ -76,9 +81,24 @@ export default function App() {
   };
 
   return (
-    <Layout style={{ height: "100vh", overflow: "hidden" }}>
-      <Layout.Sider width={300} theme="light" style={{ overflow: "auto", padding: "24px 12px" }}>
-        <Flex vertical gap={16}>
+    <Layout
+      style={{
+        height: "100vh",
+        overflow: "hidden",
+        background: token.colorBgLayout,
+      }}
+    >
+      <Layout.Sider
+        width={300}
+        theme="light"
+        style={{
+          overflow: "auto",
+          padding: `${token.paddingLG}px ${token.paddingSM}px`,
+          background: token.colorBgContainer,
+          borderRight: `1px solid ${token.colorBorderSecondary}`,
+        }}
+      >
+        <Flex vertical gap={token.margin}>
           <Title level={4} style={{ margin: 0 }}>
             <Link onClick={goHome}>牛油果旅行记 ᕕ( ᐛ )ᕗ ~</Link>
           </Title>
@@ -91,7 +111,7 @@ export default function App() {
         </Flex>
       </Layout.Sider>
 
-      <Layout style={{ flex: 1, minHeight: 0 }}>
+      <Layout style={{ flex: 1, minHeight: 0, background: token.colorBgLayout }}>
         <Layout.Content
           style={{ position: "relative", padding: 0, height: "100%", overflow: "hidden" }}
         >
@@ -109,9 +129,20 @@ export default function App() {
             mask={false}
             getContainer={false}
             rootStyle={{ position: "absolute", inset: 0, pointerEvents: "none" }}
-            styles={{ wrapper: { pointerEvents: "auto" } }}
+            styles={{
+              wrapper: { pointerEvents: "auto" },
+              header: { borderBottom: `1px solid ${token.colorBorderSecondary}` },
+              body: { padding: "20px 24px" },
+              footer: { borderTop: `1px solid ${token.colorBorderSecondary}` },
+            }}
             title={activeSpot?.name}
-            footer={activeSpot ? <Link onClick={() => void copyLink()}>复制链接</Link> : null}
+            footer={
+              activeSpot ? (
+                <Button type="primary" block onClick={() => void copyLink()}>
+                  复制链接
+                </Button>
+              ) : null
+            }
           >
             {activeSpot && (
               <Space direction="vertical" size="middle" style={{ width: "100%" }}>
@@ -138,7 +169,11 @@ export default function App() {
                       <Row gutter={[8, 8]}>
                         {activeSpot.photos.map((src) => (
                           <Col span={12} key={src}>
-                            <Image src={src} alt={activeSpot.name} />
+                            <Image
+                              src={src}
+                              alt={activeSpot.name}
+                              style={{ borderRadius: token.borderRadiusLG }}
+                            />
                           </Col>
                         ))}
                       </Row>
@@ -175,9 +210,27 @@ function WorldMap({
   overviewTick: number;
   onSpotClick: (spot: Spot) => void;
 }) {
+  const { token } = theme.useToken();
   const containerRef = useRef<HTMLDivElement>(null);
   const controllerRef = useRef<WorldMapController | null>(null);
   const [ready, setReady] = useState(false);
+
+  const markerStyle = useMemo(
+    () => ({
+      color: token.colorPrimary,
+      activeColor: token.colorPrimaryActive,
+      borderColor: token.colorBgContainer,
+      boxShadow: token.boxShadowTertiary,
+      motionDurationFast: token.motionDurationFast,
+    }),
+    [
+      token.colorPrimary,
+      token.colorPrimaryActive,
+      token.colorBgContainer,
+      token.boxShadowTertiary,
+      token.motionDurationFast,
+    ],
+  );
 
   // 初始化地图控制器，组件卸载时清理
   useEffect(() => {
@@ -188,7 +241,7 @@ function WorldMap({
     controllerRef.current = controller;
     let cancelled = false;
 
-    void controller.init(container, spots, onSpotClick).then(() => {
+    void controller.init(container, spots, markerStyle, onSpotClick).then(() => {
       if (!cancelled) setReady(true);
     });
 
@@ -198,11 +251,13 @@ function WorldMap({
       controllerRef.current = null;
       setReady(false);
     };
-  }, [onSpotClick]);
+  }, [markerStyle, onSpotClick]);
 
-  // 选中景点变化时，地图聚焦到该景点
+  // 选中景点变化时，地图聚焦到该景点并高亮标记
   useEffect(() => {
-    if (!ready || !activeSpot) return;
+    if (!ready) return;
+    controllerRef.current?.setActiveSpot(activeSpot?.id ?? null);
+    if (!activeSpot) return;
     controllerRef.current?.focusSpot(activeSpot);
   }, [ready, activeSpot]);
 
