@@ -1,15 +1,7 @@
 /**
  * 应用主界面。
  *
- * 布局结构：
- * ┌─────────────┬──────────────────────────┐
- * │  侧栏菜单    │  地图区域                  │
- * │  (按日期分组) │  ┌────────────────────┐  │
- * │             │  │ 高德地图 + 标记点    │  │
- * │             │  │  ┌──────────────┐  │  │
- * │             │  │  │ 详情抽屉(浮动) │  │  │
- * │             │  │  └──────────────┘  │  │
- * └─────────────┴──────────────────────────┘
+ * 布局：侧栏（左，按日期分组）| 地图 + 浮动详情抽屉（右）
  *
  * 状态管理：
  * - 当前选中景点由 URL Hash（#/spot/:id）驱动，通过 useSyncExternalStore 订阅
@@ -99,63 +91,69 @@ export default function App() {
         </Flex>
       </Layout.Sider>
 
-      <Layout.Content style={{ position: "relative", padding: 0, overflow: "hidden" }}>
-        <WorldMap
-          activeSpot={activeSpot}
-          overviewTick={overviewTick}
-          onSpotClick={handleSpotClick}
-        />
-
-        <Drawer
-          open={!!activeSpot}
-          onClose={closeSpot}
-          placement="right"
-          width={380}
-          mask={false}
-          getContainer={false}
-          rootStyle={{ position: "absolute", inset: 0, pointerEvents: "none" }}
-          styles={{ wrapper: { pointerEvents: "auto" } }}
-          title={activeSpot?.name}
-          footer={activeSpot ? <Link onClick={() => void copyLink()}>复制链接</Link> : null}
+      <Layout style={{ flex: 1, minHeight: 0 }}>
+        <Layout.Content
+          style={{ position: "relative", padding: 0, height: "100%", overflow: "hidden" }}
         >
-          {activeSpot && (
-            <Space direction="vertical" size="middle" style={{ width: "100%" }}>
-              <Descriptions column={1} size="small">
-                <Descriptions.Item label="时间">{formatSpotDateTime(activeSpot)}</Descriptions.Item>
-                {activeSpot.address && (
-                  <Descriptions.Item label="地址">{activeSpot.address}</Descriptions.Item>
+          <WorldMap
+            activeSpot={activeSpot}
+            overviewTick={overviewTick}
+            onSpotClick={handleSpotClick}
+          />
+
+          <Drawer
+            open={!!activeSpot}
+            onClose={closeSpot}
+            placement="right"
+            width={380}
+            mask={false}
+            getContainer={false}
+            rootStyle={{ position: "absolute", inset: 0, pointerEvents: "none" }}
+            styles={{ wrapper: { pointerEvents: "auto" } }}
+            title={activeSpot?.name}
+            footer={activeSpot ? <Link onClick={() => void copyLink()}>复制链接</Link> : null}
+          >
+            {activeSpot && (
+              <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+                <Descriptions column={1} size="small">
+                  <Descriptions.Item label="时间">
+                    {formatSpotDateTime(activeSpot)}
+                  </Descriptions.Item>
+                  {activeSpot.address && (
+                    <Descriptions.Item label="地址">{activeSpot.address}</Descriptions.Item>
+                  )}
+                </Descriptions>
+
+                {activeSpot.essay && (
+                  <>
+                    <Title level={5}>随笔</Title>
+                    <Paragraph>{activeSpot.essay}</Paragraph>
+                  </>
                 )}
-              </Descriptions>
 
-              {activeSpot.essay && (
-                <>
-                  <Title level={5}>随笔</Title>
-                  <Paragraph>{activeSpot.essay}</Paragraph>
-                </>
-              )}
-
-              {activeSpot.photos && activeSpot.photos.length > 0 ? (
-                <>
-                  <Title level={5}>照片</Title>
-                  <Image.PreviewGroup>
-                    <Row gutter={[8, 8]}>
-                      {activeSpot.photos.map((src) => (
-                        <Col span={12} key={src}>
-                          <Image src={src} alt={activeSpot.name} />
-                        </Col>
-                      ))}
-                    </Row>
-                  </Image.PreviewGroup>
-                </>
-              ) : (
-                !activeSpot.essay && (
-                  <Empty description="暂无照片与随笔" image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                )
-              )}
-            </Space>
-          )}
-        </Drawer>
-      </Layout.Content>
+                {activeSpot.photos && activeSpot.photos.length > 0 ? (
+                  <>
+                    <Title level={5}>照片</Title>
+                    <Image.PreviewGroup>
+                      <Row gutter={[8, 8]}>
+                        {activeSpot.photos.map((src) => (
+                          <Col span={12} key={src}>
+                            <Image src={src} alt={activeSpot.name} />
+                          </Col>
+                        ))}
+                      </Row>
+                    </Image.PreviewGroup>
+                  </>
+                ) : (
+                  !activeSpot.essay && (
+                    <Empty description="暂无照片与随笔" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                  )
+                )}
+              </Space>
+            )}
+          </Drawer>
+        </Layout.Content>
+      </Layout>
     </Layout>
   );
 }
