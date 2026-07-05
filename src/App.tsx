@@ -60,7 +60,7 @@ export default function App() {
 
   const goHome = () => {
     if (spotId) closeSpot();
-    else setOverviewTick((t) => t + 1);
+    setOverviewTick((t) => t + 1);
   };
 
   return (
