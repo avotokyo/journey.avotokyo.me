@@ -32,16 +32,16 @@ src/
 ## 本地开发
 
 ```bash
-pnpm install   # 或 vp install
+vp install
 cp .env.example .env   # 填入高德 Web 端 JS API Key
-pnpm dev       # 或 vp run dev
+vp run dev
 ```
 
 其他命令：
 
 ```bash
-pnpm build     # 类型检查 + 生产构建
-pnpm preview   # 预览构建产物
+vp run build     # 类型检查 + 生产构建
+vp run preview   # 预览构建产物
 ```
 
 景点数据编辑 `src/data/spots.json`，字段说明见 `src/data/spots.ts` 中的 `Spot` 接口。
