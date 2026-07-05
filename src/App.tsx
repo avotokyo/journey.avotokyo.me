@@ -80,7 +80,7 @@ export default function App() {
       <Layout.Sider width={300} theme="light" style={{ overflow: "auto", padding: "24px 12px" }}>
         <Flex vertical gap={16}>
           <Title level={4} style={{ margin: 0 }}>
-            <Link onClick={goHome}>牛油果旅行记✈️</Link>
+            <Link onClick={goHome}>牛油果旅行记 ᕕ( ᐛ )ᕗ ~</Link>
           </Title>
           <Menu
             mode="inline"
