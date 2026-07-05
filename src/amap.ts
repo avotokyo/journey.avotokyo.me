@@ -4,7 +4,7 @@
  */
 import { load } from "@amap/amap-jsapi-loader";
 
-import type { Spot } from "./data/spots.ts";
+import type { Spot } from "./data/spots";
 
 let amapPromise: Promise<typeof AMap> | null = null;
 

@@ -3,9 +3,6 @@ import { defineConfig } from "vite-plus";
 
 export default defineConfig({
   plugins: react(),
-  staged: {
-    "*": "vp check --fix",
-  },
   fmt: {
     sortImports: true,
     sortPackageJson: true,

@@ -14,7 +14,7 @@ import {
 } from "antd";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 
-import { WorldMapController } from "./amap.ts";
+import { WorldMapController } from "./amap";
 import {
   closeSpot,
   formatSpotDateTime,
@@ -25,7 +25,7 @@ import {
   spots,
   subscribeSpotId,
   type Spot,
-} from "./data/spots.ts";
+} from "./data/spots";
 
 const { Text, Title, Paragraph, Link } = Typography;
 
