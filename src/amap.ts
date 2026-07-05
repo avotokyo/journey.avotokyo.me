@@ -2,7 +2,7 @@
  * 高德地图封装：加载 JS API、管理标记点与视图切换。
  * 默认显示中国全景，选中景点后放大至街道级。
  */
-import AMapLoader from "@amap/amap-jsapi-loader";
+import { load } from "@amap/amap-jsapi-loader";
 
 import type { Spot } from "./data/spots.ts";
 
@@ -14,7 +14,7 @@ function loadAMap(): Promise<typeof AMap> {
     if (!key) {
       return Promise.reject(new Error("VITE_AMAP_KEY is not configured"));
     }
-    amapPromise = AMapLoader.load({ key, version: "2.0" });
+    amapPromise = load({ key, version: "2.0" });
   }
   return amapPromise;
 }
