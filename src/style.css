@@ -20,6 +20,16 @@ body,
   padding: 24px 12px;
 }
 
+.site-title {
+  margin: 0 !important;
+  cursor: pointer;
+  user-select: none;
+}
+
+.site-title:hover {
+  opacity: 0.75;
+}
+
 .map-stage {
   position: relative !important;
   height: 100vh;

@@ -32,6 +32,7 @@ const { Text, Title, Paragraph, Link } = Typography;
 export default function App() {
   const spotId = useSyncExternalStore(subscribeSpotId, getSpotIdFromHash);
   const activeSpot = spotId ? getSpotById(spotId) : undefined;
+  const [overviewTick, setOverviewTick] = useState(0);
 
   const groups = groupSpotsByDate(spots);
   const sortedDates = [...groups.keys()].sort((a, b) => b.localeCompare(a));
@@ -58,11 +59,16 @@ export default function App() {
 
   const handleSpotClick = useCallback((spot: Spot) => openSpot(spot.id), []);
 
+  const goHome = () => {
+    if (spotId) closeSpot();
+    else setOverviewTick((t) => t + 1);
+  };
+
   return (
     <Layout className="map-app">
       <Layout.Sider width={300} className="app-sidebar" theme="light">
         <Flex vertical gap={16} className="sidebar-inner">
-          <Title level={4} style={{ margin: 0 }}>
+          <Title level={4} className="site-title" onClick={goHome}>
             牛油果旅行记✈️
           </Title>
           <Menu
@@ -75,7 +81,11 @@ export default function App() {
       </Layout.Sider>
 
       <Layout.Content className="map-stage">
-        <WorldMap activeSpot={activeSpot} onSpotClick={handleSpotClick} />
+        <WorldMap
+          activeSpot={activeSpot}
+          overviewTick={overviewTick}
+          onSpotClick={handleSpotClick}
+        />
 
         <Drawer
           open={!!activeSpot}
@@ -133,9 +143,11 @@ export default function App() {
 
 function WorldMap({
   activeSpot,
+  overviewTick,
   onSpotClick,
 }: {
   activeSpot?: Spot;
+  overviewTick: number;
   onSpotClick: (spot: Spot) => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -169,6 +181,11 @@ function WorldMap({
     if (activeSpot) controller.focusSpot(activeSpot);
     else controller.showOverview();
   }, [ready, activeSpot]);
+
+  useEffect(() => {
+    if (!ready || overviewTick === 0) return;
+    controllerRef.current?.showOverview();
+  }, [ready, overviewTick]);
 
   return (
     <>
