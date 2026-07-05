@@ -1,3 +1,20 @@
+/**
+ * 应用主界面。
+ *
+ * 布局结构：
+ * ┌─────────────┬──────────────────────────┐
+ * │  侧栏菜单    │  地图区域                  │
+ * │  (按日期分组) │  ┌────────────────────┐  │
+ * │             │  │ 高德地图 + 标记点    │  │
+ * │             │  │  ┌──────────────┐  │  │
+ * │             │  │  │ 详情抽屉(浮动) │  │  │
+ * │             │  │  └──────────────┘  │  │
+ * └─────────────┴──────────────────────────┘
+ *
+ * 状态管理：
+ * - 当前选中景点由 URL Hash（#/spot/:id）驱动，通过 useSyncExternalStore 订阅
+ * - overviewTick 用于点击标题时触发地图回到全景（即使 Hash 未变化）
+ */
 import {
   Col,
   Descriptions,
@@ -29,10 +46,14 @@ import {
 const { Text, Title, Paragraph, Link } = Typography;
 
 export default function App() {
+  // 从 Hash 读取当前选中景点 id，Hash 变化时自动重渲染
   const spotId = useSyncExternalStore(subscribeSpotId, getSpotIdFromHash);
   const activeSpot = spotId ? getSpotById(spotId) : undefined;
+
+  // 递增此值可触发地图回到全景，用于点击标题「回到首页」
   const [overviewTick, setOverviewTick] = useState(0);
 
+  // 构建侧栏菜单：按日期分组，日期倒序（最新在上），组内景点按时间升序
   const groups = groupSpotsByDate(spots);
   const sortedDates = [...groups.keys()].sort((a, b) => b.localeCompare(a));
   const menuItems = sortedDates.map((date) => ({
@@ -49,6 +70,7 @@ export default function App() {
     })),
   }));
 
+  /** 复制当前景点的深链接到剪贴板 */
   const copyLink = async () => {
     if (!activeSpot) return;
     const url = `${location.origin}${location.pathname}#/spot/${activeSpot.id}`;
@@ -58,6 +80,7 @@ export default function App() {
 
   const handleSpotClick = useCallback((spot: Spot) => openSpot(spot.id), []);
 
+  /** 点击标题：关闭详情抽屉并回到地图全景 */
   const goHome = () => {
     if (spotId) closeSpot();
     setOverviewTick((t) => t + 1);
@@ -65,6 +88,7 @@ export default function App() {
 
   return (
     <Layout className="map-app">
+      {/* 左侧：按日期分组的景点列表 */}
       <Layout.Sider width={300} className="app-sidebar" theme="light">
         <Flex vertical gap={16} className="sidebar-inner">
           <Title level={4} className="site-title" onClick={goHome}>
@@ -79,6 +103,7 @@ export default function App() {
         </Flex>
       </Layout.Sider>
 
+      {/* 右侧：地图 + 浮动详情抽屉 */}
       <Layout.Content className="map-stage">
         <WorldMap
           activeSpot={activeSpot}
@@ -86,6 +111,10 @@ export default function App() {
           onSpotClick={handleSpotClick}
         />
 
+        {/*
+          详情抽屉：无遮罩，浮于地图上方（见 style.css .detail-drawer）。
+          选中景点时从右侧滑出，展示时间、地址、随笔与照片。
+        */}
         <Drawer
           open={!!activeSpot}
           onClose={closeSpot}
@@ -140,6 +169,14 @@ export default function App() {
   );
 }
 
+/**
+ * 地图 React 封装组件。
+ *
+ * 负责 WorldMapController 的生命周期管理：
+ * - 挂载时初始化地图，卸载时销毁
+ * - activeSpot 变化时聚焦对应景点
+ * - overviewTick 变化时回到中国全景
+ */
 function WorldMap({
   activeSpot,
   overviewTick,
@@ -153,6 +190,7 @@ function WorldMap({
   const controllerRef = useRef<WorldMapController | null>(null);
   const [ready, setReady] = useState(false);
 
+  // 初始化地图控制器，组件卸载时清理
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -173,11 +211,13 @@ function WorldMap({
     };
   }, [onSpotClick]);
 
+  // 选中景点变化时，地图聚焦到该景点
   useEffect(() => {
     if (!ready || !activeSpot) return;
     controllerRef.current?.focusSpot(activeSpot);
   }, [ready, activeSpot]);
 
+  // overviewTick > 0 时回到全景（tick 为 0 表示初始状态，跳过）
   useEffect(() => {
     if (!ready || overviewTick === 0) return;
     controllerRef.current?.showOverview();

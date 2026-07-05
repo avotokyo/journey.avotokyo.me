@@ -1,4 +1,11 @@
-/* 全屏布局：侧栏 + 地图 + 浮动抽屉 */
+/*
+ * 全局样式
+ *
+ * 桌面端：左侧固定侧栏 + 右侧全屏地图，详情抽屉浮于地图右侧。
+ * 移动端（≤768px）：侧栏置顶可滚动，地图占剩余高度，抽屉改为底部弹出。
+ */
+
+/* ── 基础重置：撑满视口，消除默认边距 ── */
 html,
 body,
 #app {
@@ -6,11 +13,13 @@ body,
   margin: 0;
 }
 
+/* ── 主布局容器：侧栏 + 地图，禁止页面级滚动 ── */
 .map-app {
   height: 100vh;
   overflow: hidden;
 }
 
+/* 左侧景点列表侧栏，内容超出时可独立滚动 */
 .app-sidebar {
   height: 100vh !important;
   overflow: auto;
@@ -20,6 +29,7 @@ body,
   padding: 24px 12px;
 }
 
+/* 站点标题，点击可回到地图全景 */
 .site-title {
   margin: 0 !important;
   cursor: pointer;
@@ -30,18 +40,20 @@ body,
   opacity: 0.75;
 }
 
+/* 右侧地图区域，作为详情抽屉的定位上下文 */
 .map-stage {
   position: relative !important;
   height: 100vh;
   overflow: hidden;
 }
 
+/* 高德地图挂载容器，填满 map-stage */
 .world-map {
   width: 100%;
   height: 100%;
 }
 
-/* 地图标记圆点 */
+/* ── 地图标记：自定义圆点（由 amap.ts createDotElement 创建） ── */
 .map-dot {
   width: 20px;
   height: 20px;
@@ -57,7 +69,13 @@ body,
   transform: scale(1.3);
 }
 
-/* 详情抽屉浮于地图上方，无遮罩 */
+/*
+ * ── 详情抽屉：浮于地图上方，无遮罩 ──
+ *
+ * 外层 pointer-events: none 让地图仍可交互；
+ * 抽屉本体 pointer-events: auto 恢复点击。
+ * 上下各留 16px 间距，形成卡片式浮动效果。
+ */
 .detail-drawer {
   position: absolute !important;
   inset: 0;
@@ -74,8 +92,9 @@ body,
   overflow: hidden;
 }
 
-/* 移动端：侧栏置顶、抽屉改为底部弹出 */
+/* ── 移动端适配（≤768px） ── */
 @media (max-width: 768px) {
+  /* 侧栏改为顶部横条，限制最大高度避免挤压地图 */
   .app-sidebar {
     width: 100% !important;
     max-width: 100% !important;
@@ -83,10 +102,12 @@ body,
     max-height: 35vh;
   }
 
+  /* 地图占据侧栏以下的剩余视口高度 */
   .map-stage {
     height: calc(100vh - 35vh);
   }
 
+  /* 抽屉改为底部全宽弹出，圆角仅在顶部 */
   .detail-drawer .ant-drawer-content-wrapper {
     left: 0 !important;
     right: 0 !important;
