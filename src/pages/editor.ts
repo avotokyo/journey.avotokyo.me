@@ -1,7 +1,7 @@
 import type { Journey } from "../data/schema.ts";
 import { searchPOI } from "../lib/amap/web-service.ts";
 import { createMapView, type MapViewHandle } from "../components/map-view.ts";
-import { renderLayout } from "../router.ts";
+import { destroyHomeMap } from "./home.ts";
 
 interface EditorWaypoint {
   id: string;
@@ -16,7 +16,10 @@ let editorMap: MapViewHandle | null = null;
 let editorWaypoints: EditorWaypoint[] = [];
 
 export function renderEditor(container: HTMLElement): void {
-  container.innerHTML = renderLayout(`
+  destroyHomeMap();
+  document.body.classList.add("scrollable");
+
+  container.innerHTML = `
     <section class="editor-page">
       <h1>旅行编辑器</h1>
       <p class="editor-hint">开发工具：搜索 POI 添加地点，编辑后导出 JSON 文件。</p>
@@ -49,7 +52,7 @@ export function renderEditor(container: HTMLElement): void {
         </div>
       </div>
     </section>
-  `);
+  `;
 
   const searchInput = container.querySelector<HTMLInputElement>("#poi-search")!;
   const resultsEl = container.querySelector<HTMLUListElement>("#poi-results")!;

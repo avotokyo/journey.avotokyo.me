@@ -8,7 +8,7 @@ const app = document.querySelector<HTMLDivElement>("#app")!;
 const router = new Router();
 
 router.on("/", () => {
-  renderHome(app);
+  void renderHome(app);
 });
 
 router.on("/journey/:id", async (params) => {

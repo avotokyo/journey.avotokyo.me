@@ -1,4 +1,5 @@
-import type { Journey, Waypoint } from "../../data/schema.ts";
+import type { Journey, Waypoint, PlaceCategory } from "../../data/schema.ts";
+import { CATEGORY_COLORS } from "../../data/schema.ts";
 import { getWaypoint } from "../../data/schema.ts";
 import { loadAMap } from "./loader.ts";
 
@@ -7,6 +8,13 @@ const MODE_COLORS: Record<string, string> = {
   driving: "#3498db",
   transit: "#e67e22",
 };
+
+function createDotElement(category: PlaceCategory = "visited"): HTMLDivElement {
+  const el = document.createElement("div");
+  el.className = `map-dot map-dot-${category}`;
+  el.style.setProperty("--dot-color", CATEGORY_COLORS[category]);
+  return el;
+}
 
 export class MapController {
   private map: AMap.Map | null = null;
@@ -21,23 +29,26 @@ export class MapController {
     this.map = new AMap.Map(container, {
       zoom: 12,
       viewMode: "2D",
+      mapStyle: "amap://styles/whitesmoke",
     });
 
-    this.infoWindow = new AMap.InfoWindow({ offset: new AMap.Pixel(0, -30) });
+    this.infoWindow = new AMap.InfoWindow({ offset: new AMap.Pixel(0, -12) });
 
     this.renderWaypoints(journey.waypoints);
     this.renderSegments(journey);
-    this.fitBounds(journey.waypoints);
+    this.fitBounds();
   }
 
   private renderWaypoints(waypoints: Waypoint[]): void {
     if (!this.map) return;
 
     for (const wp of waypoints) {
+      const category = wp.category ?? "visited";
       const marker = new AMap.Marker({
         position: wp.location,
+        content: createDotElement(category),
+        offset: new AMap.Pixel(-6, -6),
         title: wp.name,
-        label: { content: wp.name, direction: "top" },
       });
 
       marker.on("click", () => this.openInfoWindow(wp));
@@ -62,8 +73,8 @@ export class MapController {
       const polyline = new AMap.Polyline({
         path,
         strokeColor: MODE_COLORS[seg.mode] ?? "#666",
-        strokeWeight: 5,
-        strokeOpacity: 0.8,
+        strokeWeight: 4,
+        strokeOpacity: 0.7,
         lineJoin: "round",
       });
 
@@ -72,9 +83,9 @@ export class MapController {
     }
   }
 
-  private fitBounds(waypoints: Waypoint[]): void {
-    if (!this.map || waypoints.length === 0) return;
-    this.map.setFitView(this.markers, false, [60, 60, 60, 60]);
+  private fitBounds(): void {
+    if (!this.map || this.markers.length === 0) return;
+    this.map.setFitView(this.markers, false, [80, 80, 420, 80]);
   }
 
   focusWaypoint(wp: Waypoint): void {

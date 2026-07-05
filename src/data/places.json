@@ -1,0 +1,36 @@
+{
+  "places": [
+    {
+      "id": "tokyo-residence",
+      "name": "东京",
+      "location": [139.6917, 35.6895],
+      "category": "residence",
+      "notes": "现居地"
+    },
+    {
+      "id": "nrt-airport",
+      "name": "成田国际机场",
+      "location": [140.3929, 35.772],
+      "category": "airport"
+    },
+    {
+      "id": "hnd-airport",
+      "name": "羽田机场",
+      "location": [139.7798, 35.5494],
+      "category": "airport"
+    },
+    {
+      "id": "kyoto-wishlist",
+      "name": "京都",
+      "location": [135.7681, 35.0116],
+      "category": "wishlist",
+      "notes": "下次想去"
+    },
+    {
+      "id": "osaka-wishlist",
+      "name": "大阪",
+      "location": [135.5023, 34.6937],
+      "category": "wishlist"
+    }
+  ]
+}

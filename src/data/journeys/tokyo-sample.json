@@ -13,6 +13,7 @@
       "location": [139.796655, 35.714765],
       "date": "2024-03-15",
       "time": "09:30",
+      "category": "visited",
       "notes": "东京最古老的寺庙，雷门是标志性入口。",
       "photos": ["/media/journeys/tokyo-sample/sensoji.svg"]
     },
@@ -23,6 +24,7 @@
       "location": [139.771087, 35.714169],
       "date": "2024-03-15",
       "time": "14:00",
+      "category": "visited",
       "notes": "春季赏樱胜地，博物馆群集中于此。",
       "photos": ["/media/journeys/tokyo-sample/ueno.svg"]
     },
@@ -33,6 +35,7 @@
       "location": [139.745433, 35.658581],
       "date": "2024-03-16",
       "time": "16:00",
+      "category": "visited",
       "notes": "东京地标，可俯瞰城市全景。"
     },
     {
@@ -42,6 +45,7 @@
       "location": [139.700464, 35.659108],
       "date": "2024-03-16",
       "time": "16:30",
+      "category": "stay",
       "notes": "世界最繁忙的十字路口之一。",
       "photos": ["/media/journeys/tokyo-sample/shibuya.svg"]
     },
@@ -52,6 +56,7 @@
       "location": [139.699326, 35.676397],
       "date": "2024-03-17",
       "time": "09:00",
+      "category": "visited",
       "notes": "都市中的宁静绿洲，参道两旁古树参天。"
     }
   ],

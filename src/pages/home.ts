@@ -1,21 +1,45 @@
-import { getAllJourneys } from "../data/index.ts";
-import { renderJourneyCard } from "../components/journey-card.ts";
-import { renderLayout } from "../router.ts";
+import { getAllJourneys, getAllMapPoints, getSiteProfile } from "../data/index.ts";
+import { WorldMapController } from "../lib/amap/world-map-controller.ts";
+import { renderSidebar } from "../components/sidebar.ts";
+import { renderLegend, renderMapControls } from "../components/map-legend.ts";
 
-export function renderHome(container: HTMLElement): void {
-  const journeys = getAllJourneys();
+let worldMap: WorldMapController | null = null;
 
-  container.innerHTML = renderLayout(`
-    <section class="home">
-      <div class="home-hero">
-        <h1>旅行记录</h1>
-        <p class="home-subtitle">用地图记录每一段旅程</p>
+export async function renderHome(container: HTMLElement): Promise<void> {
+  document.body.classList.remove("scrollable");
+
+  if (worldMap) {
+    worldMap.destroy();
+    worldMap = null;
+  }
+
+  container.innerHTML = `
+    <div class="map-app">
+      <div id="sidebar-panel"></div>
+      <div class="map-stage">
+        <div id="world-map" class="world-map"></div>
+        <div id="legend-panel" class="map-overlay map-overlay-legend"></div>
+        <div id="controls-panel" class="map-overlay map-overlay-controls"></div>
       </div>
-      ${
-        journeys.length > 0
-          ? `<div class="journey-grid">${journeys.map(renderJourneyCard).join("")}</div>`
-          : `<p class="empty-state">暂无旅行记录</p>`
-      }
-    </section>
-  `);
+    </div>
+  `;
+
+  const profile = getSiteProfile();
+  const journeys = getAllJourneys();
+  const points = getAllMapPoints();
+
+  renderSidebar(container.querySelector("#sidebar-panel")!, profile, journeys);
+
+  worldMap = new WorldMapController();
+  await worldMap.init(container.querySelector("#world-map")!, points);
+
+  renderLegend(container.querySelector("#legend-panel")!, worldMap);
+  renderMapControls(container.querySelector("#controls-panel")!, worldMap);
+}
+
+export function destroyHomeMap(): void {
+  if (worldMap) {
+    worldMap.destroy();
+    worldMap = null;
+  }
 }
