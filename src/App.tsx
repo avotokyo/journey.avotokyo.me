@@ -217,19 +217,11 @@ function WorldMap({
 
   const markerStyle = useMemo(
     () => ({
-      color: token.colorPrimary,
-      activeColor: token.colorPrimaryActive,
-      borderColor: token.colorBgContainer,
-      boxShadow: token.boxShadowTertiary,
-      motionDurationFast: token.motionDurationFast,
+      fillColor: token.colorPrimary,
+      activeFillColor: token.colorPrimaryActive,
+      strokeColor: token.colorBgContainer,
     }),
-    [
-      token.colorPrimary,
-      token.colorPrimaryActive,
-      token.colorBgContainer,
-      token.boxShadowTertiary,
-      token.motionDurationFast,
-    ],
+    [token.colorPrimary, token.colorPrimaryActive, token.colorBgContainer],
   );
 
   // 初始化地图控制器，组件卸载时清理

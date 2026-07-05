@@ -3,7 +3,7 @@
  *
  * 职责：
  * - 懒加载高德 JS API（单例 Promise，避免重复请求）
- * - 在地图上渲染景点标记（Ant Design Badge 状态点，经 React 挂载）
+ * - 在地图上渲染景点标记（CircleMarker 圆点）
  * - 管理两种视图：中国全景概览 / 选中景点街道级聚焦
  *
  * 默认显示中国全景，选中景点后放大至街道级并预留右侧抽屉空间。
@@ -11,7 +11,6 @@
 import { load } from "@amap/amap-jsapi-loader";
 
 import type { Spot } from "./data/spots";
-import { MarkerMountManager } from "./markerMount";
 
 /** 高德 API 加载 Promise 缓存，全局只加载一次 */
 let amapPromise: Promise<typeof AMap> | null = null;
@@ -31,6 +30,10 @@ function loadAMap(): Promise<typeof AMap> {
   return amapPromise;
 }
 
+/** 圆点半径（像素，4px 网格） */
+const DOT_RADIUS = 8;
+const ACTIVE_DOT_RADIUS = 10;
+
 /** 聚焦景点时的目标缩放级别（街道级） */
 const FOCUS_ZOOM = 16;
 /** 中国全景视图的中心点 [经度, 纬度] */
@@ -43,14 +46,42 @@ const CHINA_ZOOM = 4;
  */
 const DRAWER_PADDING: [number, number, number, number] = [80, 400, 80, 80];
 
-/** 地图标记样式，由 React 侧 theme token 注入 */
+/** 地图标记配色，由 React 侧 Ant Design token 注入 */
 export type MarkerStyleConfig = {
-  color: string;
-  activeColor: string;
-  borderColor: string;
-  boxShadow: string;
-  motionDurationFast: string;
+  fillColor: string;
+  activeFillColor: string;
+  strokeColor: string;
 };
+
+function createCircleMarker(
+  spot: Spot,
+  style: MarkerStyleConfig,
+  active: boolean,
+): AMap.CircleMarker {
+  return new AMap.CircleMarker({
+    center: spot.location,
+    radius: active ? ACTIVE_DOT_RADIUS : DOT_RADIUS,
+    strokeColor: style.strokeColor,
+    strokeWeight: 2,
+    strokeOpacity: 1,
+    fillColor: active ? style.activeFillColor : style.fillColor,
+    fillOpacity: 1,
+    cursor: "pointer",
+    zIndex: active ? 101 : 100,
+  });
+}
+
+function applyMarkerState(
+  marker: AMap.CircleMarker,
+  style: MarkerStyleConfig,
+  active: boolean,
+): void {
+  marker.setOptions({
+    radius: active ? ACTIVE_DOT_RADIUS : DOT_RADIUS,
+    fillColor: active ? style.activeFillColor : style.fillColor,
+    zIndex: active ? 101 : 100,
+  });
+}
 
 /**
  * 地图控制器：封装 AMap.Map 实例的生命周期与交互逻辑。
@@ -63,10 +94,9 @@ export type MarkerStyleConfig = {
  */
 export class WorldMapController {
   private map: AMap.Map | null = null;
-  private markers: AMap.Marker[] = [];
+  private markers: AMap.CircleMarker[] = [];
   /** 景点 id → 标记实例，用于快速定位 */
-  private markerById = new Map<string, AMap.Marker>();
-  private markerMounts: MarkerMountManager | null = null;
+  private markerById = new Map<string, AMap.CircleMarker>();
   private markerStyle: MarkerStyleConfig | null = null;
   private activeSpotId: string | null = null;
   private onSpotClick?: (spot: Spot) => void;
@@ -75,7 +105,7 @@ export class WorldMapController {
    * 初始化地图实例并在其上渲染所有景点标记。
    * @param container 地图挂载的 DOM 容器
    * @param spots 景点列表
-   * @param markerStyle 标记样式（来自 Ant Design token）
+   * @param markerStyle 标记配色（来自 Ant Design token）
    * @param onSpotClick 点击标记时的回调
    */
   async init(
@@ -87,7 +117,6 @@ export class WorldMapController {
     const AMap = await loadAMap();
     this.onSpotClick = onSpotClick;
     this.markerStyle = markerStyle;
-    this.markerMounts = new MarkerMountManager(markerStyle);
 
     this.map = new AMap.Map(container, {
       zoom: CHINA_ZOOM,
@@ -124,30 +153,33 @@ export class WorldMapController {
 
   /** 高亮当前选中的地图标记 */
   setActiveSpot(spotId: string | null): void {
+    if (!this.markerStyle) return;
+
+    if (this.activeSpotId) {
+      const prev = this.markerById.get(this.activeSpotId);
+      if (prev) applyMarkerState(prev, this.markerStyle, false);
+    }
+
     this.activeSpotId = spotId;
-    this.markerMounts?.setActiveSpot(spotId);
+
+    if (spotId) {
+      const next = this.markerById.get(spotId);
+      if (next) applyMarkerState(next, this.markerStyle, true);
+    }
   }
 
   /** 清除旧标记并重新渲染，保持 markerById 索引同步 */
   private renderMarkers(spots: Spot[]): void {
-    if (!this.map || !this.markerMounts || !this.markerStyle) return;
+    if (!this.map || !this.markerStyle) return;
 
     for (const marker of this.markers) {
       this.map.remove(marker);
     }
     this.markers = [];
     this.markerById.clear();
-    this.markerMounts.destroy();
-    this.markerMounts = new MarkerMountManager(this.markerStyle);
 
     for (const spot of spots) {
-      const content = this.markerMounts.createContainer(spot.id, spot.id === this.activeSpotId);
-      const marker = new AMap.Marker({
-        position: spot.location,
-        content,
-        anchor: "center",
-        title: spot.name,
-      });
+      const marker = createCircleMarker(spot, this.markerStyle, spot.id === this.activeSpotId);
 
       marker.on("click", () => this.onSpotClick?.(spot));
 
@@ -163,8 +195,6 @@ export class WorldMapController {
     this.map = null;
     this.markers = [];
     this.markerById.clear();
-    this.markerMounts?.destroy();
-    this.markerMounts = null;
     this.markerStyle = null;
     this.activeSpotId = null;
   }
