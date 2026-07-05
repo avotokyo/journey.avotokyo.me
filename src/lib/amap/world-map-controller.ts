@@ -1,4 +1,4 @@
-import type { MapPoint, PlaceCategory } from "../../data/schema.ts";
+import type { PlaceCategory, Spot } from "../../data/schema.ts";
 import { CATEGORY_COLORS } from "../../data/schema.ts";
 import { loadAMap } from "./loader.ts";
 
@@ -15,7 +15,7 @@ export class WorldMapController {
   private map: AMap.Map | null = null;
   private markers: AMap.Marker[] = [];
   private infoWindow: AMap.InfoWindow | null = null;
-  private points: MapPoint[] = [];
+  private spots: Spot[] = [];
   private activeCategories = new Set<PlaceCategory>([
     "visited",
     "stay",
@@ -24,20 +24,20 @@ export class WorldMapController {
     "wishlist",
   ]);
   private styleIndex = 0;
-  private onPointClick?: (point: MapPoint) => void;
+  private onSpotClick?: (spot: Spot) => void;
 
   async init(
     container: HTMLElement,
-    points: MapPoint[],
+    spots: Spot[],
     options?: {
       zoom?: number;
       center?: [number, number];
-      onPointClick?: (point: MapPoint) => void;
+      onSpotClick?: (spot: Spot) => void;
     },
   ): Promise<void> {
     const AMap = await loadAMap();
-    this.points = points;
-    this.onPointClick = options?.onPointClick;
+    this.spots = spots;
+    this.onSpotClick = options?.onSpotClick;
 
     this.map = new AMap.Map(container, {
       zoom: options?.zoom ?? 5,
@@ -57,15 +57,6 @@ export class WorldMapController {
     this.renderMarkers();
   }
 
-  toggleCategory(category: PlaceCategory): void {
-    if (this.activeCategories.has(category)) {
-      this.activeCategories.delete(category);
-    } else {
-      this.activeCategories.add(category);
-    }
-    this.renderMarkers();
-  }
-
   getActiveCategories(): Set<PlaceCategory> {
     return new Set(this.activeCategories);
   }
@@ -75,10 +66,10 @@ export class WorldMapController {
     this.map.setFitView(this.markers, false, [80, 80, 80, 340]);
   }
 
-  focusPoint(point: MapPoint): void {
+  focusSpot(spot: Spot): void {
     if (!this.map) return;
-    this.map.setZoomAndCenter(12, point.location);
-    this.openInfo(point);
+    this.map.setZoomAndCenter(14, spot.location);
+    this.openInfo(spot);
   }
 
   toggleMapStyle(): void {
@@ -99,20 +90,20 @@ export class WorldMapController {
     }
     this.markers = [];
 
-    for (const point of this.points) {
-      if (!this.activeCategories.has(point.category)) continue;
+    for (const spot of this.spots) {
+      if (!this.activeCategories.has(spot.category)) continue;
 
-      const highlighted = point.category === "residence";
+      const highlighted = spot.category === "residence";
       const marker = new AMap.Marker({
-        position: point.location,
-        content: createDotElement(point.category, highlighted),
+        position: spot.location,
+        content: createDotElement(spot.category, highlighted),
         offset: new AMap.Pixel(-6, -6),
-        title: point.name,
+        title: spot.name,
       });
 
       marker.on("click", () => {
-        this.openInfo(point);
-        this.onPointClick?.(point);
+        this.openInfo(spot);
+        this.onSpotClick?.(spot);
       });
 
       this.map!.add(marker);
@@ -120,22 +111,17 @@ export class WorldMapController {
     }
   }
 
-  private openInfo(point: MapPoint): void {
+  private openInfo(spot: Spot): void {
     if (!this.infoWindow || !this.map) return;
-
-    const journeyLink = point.journeyId
-      ? `<a href="#/journey/${point.journeyId}" class="map-info-link">查看旅程 →</a>`
-      : "";
 
     this.infoWindow.setContent(`
       <div class="map-info">
-        <strong>${point.name}</strong>
-        ${point.journeyTitle ? `<p class="map-info-journey">${point.journeyTitle}</p>` : ""}
-        ${point.notes ? `<p class="map-info-notes">${point.notes}</p>` : ""}
-        ${journeyLink}
+        <strong>${spot.name}</strong>
+        ${spot.essay ? `<p class="map-info-notes">${spot.essay.slice(0, 60)}${spot.essay.length > 60 ? "…" : ""}</p>` : ""}
+        <a href="#/spot/${spot.id}" class="map-info-link">查看详情 →</a>
       </div>
     `);
-    this.infoWindow.open(this.map, point.location);
+    this.infoWindow.open(this.map, spot.location);
   }
 
   destroy(): void {

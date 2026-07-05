@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { MapPoint, PlaceCategory } from "../data/schema.ts";
+import type { PlaceCategory, Spot } from "../data/schema.ts";
 import { WorldMapController } from "../lib/amap/world-map-controller.ts";
 import MapLegend from "./MapLegend.tsx";
 import MapControls from "./MapControls.tsx";
@@ -7,12 +7,11 @@ import MapControls from "./MapControls.tsx";
 const ALL_CATEGORIES: PlaceCategory[] = ["visited", "stay", "residence", "airport", "wishlist"];
 
 interface WorldMapProps {
-  points: MapPoint[];
-  zoom?: number;
-  center?: [number, number];
+  spots: Spot[];
+  onSpotClick?: (spot: Spot) => void;
 }
 
-export default function WorldMap({ points, zoom, center }: WorldMapProps) {
+export default function WorldMap({ spots, onSpotClick }: WorldMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const controllerRef = useRef<WorldMapController | null>(null);
   const [activeCategories, setActiveCategories] = useState<Set<PlaceCategory>>(
@@ -28,9 +27,13 @@ export default function WorldMap({ points, zoom, center }: WorldMapProps) {
     controllerRef.current = controller;
     let cancelled = false;
 
-    void controller.init(container, points, { zoom, center }).then(() => {
-      if (!cancelled) setReady(true);
-    });
+    void controller
+      .init(container, spots, {
+        onSpotClick: (spot) => onSpotClick?.(spot),
+      })
+      .then(() => {
+        if (!cancelled) setReady(true);
+      });
 
     return () => {
       cancelled = true;
@@ -38,7 +41,7 @@ export default function WorldMap({ points, zoom, center }: WorldMapProps) {
       controllerRef.current = null;
       setReady(false);
     };
-  }, [points, zoom, center]);
+  }, [spots, onSpotClick]);
 
   useEffect(() => {
     controllerRef.current?.setCategoryFilter(activeCategories);

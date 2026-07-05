@@ -1,0 +1,97 @@
+{
+  "spots": [
+    {
+      "id": "tiananmen",
+      "name": "天安门广场",
+      "address": "北京市东城区东长安街",
+      "location": [116.397455, 39.909187],
+      "category": "visited",
+      "date": "2024-05-01",
+      "time": "08:00",
+      "essay": "清晨赶来观看升旗仪式，广场上人潮涌动，却出奇地安静。朝阳从城楼后方升起，那一刻真正理解了这座城市的庄严。",
+      "photos": ["/media/spots/tiananmen.svg"]
+    },
+    {
+      "id": "forbidden-city",
+      "name": "故宫博物院",
+      "address": "北京市东城区景山前街4号",
+      "location": [116.403963, 39.915119],
+      "category": "visited",
+      "date": "2024-05-01",
+      "time": "10:30",
+      "essay": "沿着中轴线一路向北，红墙黄瓦在五月的天光下格外耀眼。御花园的太湖石让人驻足良久。",
+      "photos": ["/media/spots/gugong.svg"]
+    },
+    {
+      "id": "nanluoguxiang",
+      "name": "南锣鼓巷",
+      "address": "北京市东城区南锣鼓巷",
+      "location": [116.403285, 39.936987],
+      "category": "stay",
+      "date": "2024-05-01",
+      "time": "15:00",
+      "essay": "胡同里的文艺气与市井烟火气交织。在转角处买了一碗豆汁，味道难忘。",
+      "photos": ["/media/spots/nanluogu.svg"]
+    },
+    {
+      "id": "summer-palace",
+      "name": "颐和园",
+      "address": "北京市海淀区新建宫门路19号",
+      "location": [116.275179, 39.999617],
+      "category": "visited",
+      "date": "2024-05-02",
+      "time": "09:00",
+      "essay": "昆明湖上的风比城里凉许多。长廊的彩绘在修复后焕然一新，泛舟湖上，远山如黛。"
+    },
+    {
+      "id": "temple-of-heaven",
+      "name": "天坛公园",
+      "address": "北京市东城区天坛路甲1号",
+      "location": [116.412967, 39.883172],
+      "category": "visited",
+      "date": "2024-05-03",
+      "time": "07:00",
+      "essay": "祈年殿在晨光中像一幅剪影。本地人在圆丘周围晨练，太极与鸽哨声此起彼伏。"
+    },
+    {
+      "id": "beijing-residence",
+      "name": "北京",
+      "location": [116.4074, 39.9042],
+      "category": "residence",
+      "date": "2023-09-01",
+      "essay": "现居地。秋高气爽的日子最喜欢在二环边散步。"
+    },
+    {
+      "id": "pek-airport",
+      "name": "首都国际机场",
+      "location": [116.584556, 40.080111],
+      "category": "airport",
+      "date": "2024-05-01",
+      "time": "06:00"
+    },
+    {
+      "id": "pkx-airport",
+      "name": "大兴国际机场",
+      "location": [116.410556, 39.509167],
+      "category": "airport",
+      "date": "2024-04-20",
+      "time": "14:30"
+    },
+    {
+      "id": "hangzhou-wishlist",
+      "name": "杭州",
+      "location": [120.1551, 30.2741],
+      "category": "wishlist",
+      "date": "2024-06-01",
+      "essay": "下次想去西湖边住几天，看看断桥残雪。"
+    },
+    {
+      "id": "chengdu-wishlist",
+      "name": "成都",
+      "location": [104.0665, 30.5723],
+      "category": "wishlist",
+      "date": "2024-06-01",
+      "essay": "想吃正宗的钟水饺和担担面。"
+    }
+  ]
+}

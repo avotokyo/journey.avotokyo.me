@@ -1,17 +1,34 @@
 import { Avatar, Flex, Layout, Menu, Space, Typography } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
-import type { Journey, SiteProfile } from "../data/schema.ts";
+import type { SiteProfile, Spot } from "../data/schema.ts";
+import { CATEGORY_LABELS, groupSpotsByDate } from "../data/schema.ts";
 
 const { Text, Title, Link } = Typography;
 
 interface SidebarProps {
   profile: SiteProfile;
-  journeys: Journey[];
+  spots: Spot[];
 }
 
-export default function Sidebar({ profile, journeys }: SidebarProps) {
+export default function Sidebar({ profile, spots }: SidebarProps) {
   const { id: activeId } = useParams();
   const navigate = useNavigate();
+  const groups = groupSpotsByDate(spots);
+  const sortedDates = [...groups.keys()].sort((a, b) => b.localeCompare(a));
+
+  const menuItems = sortedDates.map((date) => ({
+    type: "group" as const,
+    label: date,
+    children: groups.get(date)!.map((spot) => ({
+      key: spot.id,
+      label: spot.name,
+      extra: (
+        <Text type="secondary" style={{ fontSize: 12 }}>
+          {CATEGORY_LABELS[spot.category]}
+        </Text>
+      ),
+    })),
+  }));
 
   return (
     <Layout.Sider width={300} className="app-sidebar" theme="light">
@@ -38,22 +55,8 @@ export default function Sidebar({ profile, journeys }: SidebarProps) {
         <Menu
           mode="inline"
           selectedKeys={activeId ? [activeId] : []}
-          items={[
-            {
-              type: "group",
-              label: "旅程",
-              children: journeys.map((journey) => ({
-                key: journey.id,
-                label: journey.title,
-                extra: (
-                  <Text type="secondary" style={{ fontSize: 12 }}>
-                    {journey.waypoints.length} 处
-                  </Text>
-                ),
-              })),
-            },
-          ]}
-          onClick={({ key }) => navigate(`/journey/${key}`)}
+          items={menuItems}
+          onClick={({ key }) => navigate(`/spot/${key}`)}
         />
       </Flex>
     </Layout.Sider>

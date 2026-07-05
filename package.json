@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vp dev",
-    "resolve-routes": "tsx scripts/resolve-routes.ts",
-    "build": "tsx scripts/resolve-routes.ts && tsc && vp build",
+    "build": "tsc && vp build",
     "preview": "vp preview",
     "prepare": "vp config"
   },
