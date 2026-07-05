@@ -11,11 +11,13 @@ interface WorldMapProps {
   onSpotClick?: (spot: Spot) => void;
 }
 
+/** 地图容器：挂载 AMap 实例，并根据路由同步视图 */
 export default function WorldMap({ spots, activeSpot, onSpotClick }: WorldMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const controllerRef = useRef<WorldMapController | null>(null);
   const [ready, setReady] = useState(false);
 
+  // 初始化地图，组件卸载时销毁实例
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -40,6 +42,7 @@ export default function WorldMap({ spots, activeSpot, onSpotClick }: WorldMapPro
     };
   }, [spots, onSpotClick]);
 
+  // 有选中景点则放大，否则回到中国全景
   useEffect(() => {
     if (!ready) return;
     const controller = controllerRef.current;

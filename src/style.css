@@ -1,3 +1,4 @@
+/* 全屏布局：侧栏 + 地图 + 浮动抽屉 */
 html,
 body,
 #app {
@@ -30,6 +31,7 @@ body,
   height: 100%;
 }
 
+/* 地图标记圆点 */
 .map-dot {
   width: 20px;
   height: 20px;
@@ -52,6 +54,7 @@ body,
   z-index: 20;
 }
 
+/* 详情抽屉浮于地图上方，无遮罩 */
 .detail-drawer {
   position: absolute !important;
   inset: 0;
@@ -68,6 +71,7 @@ body,
   overflow: hidden;
 }
 
+/* 移动端：侧栏置顶、抽屉改为底部弹出 */
 @media (max-width: 768px) {
   .app-sidebar {
     width: 100% !important;

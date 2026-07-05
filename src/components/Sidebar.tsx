@@ -4,12 +4,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import type { Spot } from "../data/schema.ts";
 import { groupSpotsByDate } from "../data/schema.ts";
 
-const { Text, Title, Link } = Typography;
+const { Text, Title } = Typography;
 
 interface SidebarProps {
   spots: Spot[];
 }
 
+/** 左侧时间线：按日期分组展示景点列表 */
 export default function Sidebar({ spots }: SidebarProps) {
   const { id: activeId } = useParams();
   const navigate = useNavigate();
@@ -37,10 +38,6 @@ export default function Sidebar({ spots }: SidebarProps) {
           <Title level={4} style={{ margin: 0 }}>
             牛油果旅行记✈️
           </Title>
-          <Text type="secondary">景点 · 时间 · 照片 · 随笔</Text>
-          <Link href="https://github.com" target="_blank">
-            GitHub
-          </Link>
         </Space>
 
         <Menu

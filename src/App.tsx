@@ -8,6 +8,7 @@ import WorldMap from "./components/WorldMap.tsx";
 import { getAllSpots, getSpotById, type Spot } from "./data/schema.ts";
 import spotsData from "./data/spots.json";
 
+/** 主布局：侧栏 + 地图 + 详情抽屉，路由 #/spot/:id 控制当前选中景点 */
 function AppLayout() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -55,6 +56,7 @@ function NotFoundPage() {
 
 export default function App() {
   return (
+    // HashRouter 便于静态站点部署，无需服务端路由
     <HashRouter>
       <Routes>
         <Route path="/" element={<AppLayout />} />

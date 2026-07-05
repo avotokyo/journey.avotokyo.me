@@ -1,7 +1,12 @@
+/**
+ * 高德地图封装：加载 JS API、管理标记点与视图切换。
+ * 默认显示中国全景，选中景点后放大至街道级。
+ */
 import AMapLoader from "@amap/amap-jsapi-loader";
 
 import type { Spot } from "./data/schema.ts";
 
+/** 单例 Promise，避免重复加载 AMap SDK */
 let amapPromise: Promise<typeof AMap> | null = null;
 
 function loadAMap(): Promise<typeof AMap> {
@@ -21,10 +26,12 @@ function loadAMap(): Promise<typeof AMap> {
 const MAP_STYLES = ["amap://styles/whitesmoke", "amap://styles/normal"] as const;
 const DOT_SIZE = 20;
 const DOT_COLOR = "#f97316";
-const FOCUS_ZOOM = 16;
+const FOCUS_ZOOM = 16; // 选中景点时的缩放级别
 const CHINA_CENTER: [number, number] = [105.0, 36.0];
 const CHINA_ZOOM = 4;
+/** 边距 [上, 右, 下, 左]，左侧预留侧栏宽度 */
 const OVERVIEW_PADDING: [number, number, number, number] = [80, 80, 80, 340];
+/** 右侧预留详情抽屉宽度，避免标记被遮挡 */
 const DRAWER_PADDING: [number, number, number, number] = [80, 400, 80, 80];
 
 function createDotElement(): HTMLDivElement {
@@ -69,16 +76,19 @@ export class WorldMapController {
     if (!options?.center) this.showOverview();
   }
 
+  /** 回到中国全景（默认视图） */
   showOverview(): void {
     if (!this.map) return;
     this.map.setZoomAndCenter(CHINA_ZOOM, CHINA_CENTER);
   }
 
+  /** 缩放至包含所有标记点的范围 */
   fitAll(): void {
     if (!this.map || this.markers.length === 0) return;
     this.map.setFitView(this.markers, false, OVERVIEW_PADDING);
   }
 
+  /** 放大并居中到指定景点 */
   focusSpot(spot: Spot): void {
     if (!this.map) return;
 

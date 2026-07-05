@@ -12,6 +12,7 @@ interface SpotDetailDrawerProps {
   onClose: () => void;
 }
 
+/** 右侧详情抽屉：展示时间、地址、随笔与照片，支持复制分享链接 */
 export default function SpotDetailDrawer({ spot, open, onClose }: SpotDetailDrawerProps) {
   if (!spot) return null;
 

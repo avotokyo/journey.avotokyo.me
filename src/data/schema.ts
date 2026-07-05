@@ -1,7 +1,9 @@
+/** 景点数据结构，对应 spots.json 中的每条记录 */
 export interface Spot {
   id: string;
   name: string;
   address?: string;
+  /** 经纬度 [经度, 纬度] */
   location: [number, number];
   date: string;
   time?: string;
@@ -9,10 +11,12 @@ export interface Spot {
   photos?: string[];
 }
 
+/** 格式化显示时间，有 time 则拼接日期与时间 */
 export function formatSpotDateTime(spot: Spot): string {
   return spot.time ? `${spot.date} ${spot.time}` : spot.date;
 }
 
+/** 按日期分组，同一天内按 time 升序排列 */
 export function groupSpotsByDate(spots: Spot[]): Map<string, Spot[]> {
   const groups = new Map<string, Spot[]>();
   for (const spot of spots) {
@@ -26,6 +30,7 @@ export function groupSpotsByDate(spots: Spot[]): Map<string, Spot[]> {
   return groups;
 }
 
+/** 按日期、时间倒序排列（最新的在前） */
 export function getAllSpots(spots: Spot[]): Spot[] {
   return [...spots].sort((a, b) => {
     const dateCmp = b.date.localeCompare(a.date);
