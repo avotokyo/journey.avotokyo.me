@@ -3,7 +3,7 @@
     "target": "es2023",
     "module": "esnext",
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
-    "types": ["vite/client", "amap-js-api"],
+    "types": ["vite-plus/client", "amap-js-api"],
     "allowArbitraryExtensions": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
