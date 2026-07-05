@@ -5,11 +5,18 @@
   "type": "module",
   "scripts": {
     "dev": "vp dev",
-    "build": "tsc && vp build",
+    "resolve-routes": "tsx scripts/resolve-routes.ts",
+    "build": "tsx scripts/resolve-routes.ts && tsc && vp build",
     "preview": "vp preview",
     "prepare": "vp config"
   },
+  "dependencies": {
+    "@amap/amap-jsapi-loader": "^1.0.1"
+  },
   "devDependencies": {
+    "@types/amap-js-api": "^1.4.16",
+    "@types/node": "^26.1.0",
+    "tsx": "^4.19.4",
     "typescript": "~6.0.2",
     "vite": "catalog:",
     "vite-plus": "catalog:"
