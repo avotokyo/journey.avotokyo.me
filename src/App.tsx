@@ -1,68 +1,183 @@
-import { Button, Layout, Result } from "antd";
-import { useCallback, useMemo } from "react";
-import { HashRouter, Route, Routes, useNavigate, useParams } from "react-router-dom";
+import {
+  Col,
+  Descriptions,
+  Drawer,
+  Empty,
+  Flex,
+  FloatButton,
+  Image,
+  Layout,
+  Menu,
+  Row,
+  Typography,
+  message,
+} from "antd";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 
-import Sidebar from "./components/Sidebar.tsx";
-import SpotDetailDrawer from "./components/SpotDetailDrawer.tsx";
-import WorldMap from "./components/WorldMap.tsx";
-import { getAllSpots, getSpotById, type Spot } from "./data/schema.ts";
-import spotsData from "./data/spots.json";
+import { WorldMapController } from "./amap.ts";
+import {
+  closeSpot,
+  formatSpotDateTime,
+  getSpotById,
+  getSpotIdFromHash,
+  groupSpotsByDate,
+  openSpot,
+  spots,
+  subscribeSpotId,
+  type Spot,
+} from "./data/spots.ts";
 
-/** 主布局：侧栏 + 地图 + 详情抽屉，路由 #/spot/:id 控制当前选中景点 */
-function AppLayout() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const spots = useMemo(() => getAllSpots(spotsData.spots as Spot[]), []);
-  const activeSpot = id ? getSpotById(spots, id) : undefined;
-
-  const handleSpotClick = useCallback(
-    (spot: { id: string }) => navigate(`/spot/${spot.id}`),
-    [navigate],
-  );
-
-  const handleClose = useCallback(() => navigate("/"), [navigate]);
-
-  return (
-    <Layout className="map-app">
-      <Sidebar spots={spots} />
-      <Layout.Content className="map-stage">
-        <WorldMap spots={spots} activeSpot={activeSpot} onSpotClick={handleSpotClick} />
-        <SpotDetailDrawer spot={activeSpot} open={!!activeSpot} onClose={handleClose} />
-      </Layout.Content>
-    </Layout>
-  );
-}
-
-function NotFoundPage() {
-  const navigate = useNavigate();
-
-  return (
-    <Layout className="map-app">
-      <Layout.Content>
-        <Result
-          status="404"
-          title="404"
-          subTitle="页面不存在"
-          extra={
-            <Button type="primary" onClick={() => navigate("/")}>
-              返回首页
-            </Button>
-          }
-        />
-      </Layout.Content>
-    </Layout>
-  );
-}
+const { Text, Title, Paragraph, Link } = Typography;
 
 export default function App() {
+  const spotId = useSyncExternalStore(subscribeSpotId, getSpotIdFromHash);
+  const activeSpot = spotId ? getSpotById(spotId) : undefined;
+
+  const groups = groupSpotsByDate(spots);
+  const sortedDates = [...groups.keys()].sort((a, b) => b.localeCompare(a));
+  const menuItems = sortedDates.map((date) => ({
+    type: "group" as const,
+    label: date,
+    children: groups.get(date)!.map((spot) => ({
+      key: spot.id,
+      label: spot.name,
+      extra: (
+        <Text type="secondary" style={{ fontSize: 12 }}>
+          {spot.time ?? ""}
+        </Text>
+      ),
+    })),
+  }));
+
+  const copyLink = async () => {
+    if (!activeSpot) return;
+    const url = `${location.origin}${location.pathname}#/spot/${activeSpot.id}`;
+    await navigator.clipboard.writeText(url);
+    message.success("链接已复制");
+  };
+
+  const handleSpotClick = useCallback((spot: Spot) => openSpot(spot.id), []);
+
   return (
-    // HashRouter 便于静态站点部署，无需服务端路由
-    <HashRouter>
-      <Routes>
-        <Route path="/" element={<AppLayout />} />
-        <Route path="/spot/:id" element={<AppLayout />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </HashRouter>
+    <Layout className="map-app">
+      <Layout.Sider width={300} className="app-sidebar" theme="light">
+        <Flex vertical gap={16} className="sidebar-inner">
+          <Title level={4} style={{ margin: 0 }}>
+            牛油果旅行记✈️
+          </Title>
+          <Menu
+            mode="inline"
+            selectedKeys={spotId ? [spotId] : []}
+            items={menuItems}
+            onClick={({ key }) => openSpot(String(key))}
+          />
+        </Flex>
+      </Layout.Sider>
+
+      <Layout.Content className="map-stage">
+        <WorldMap activeSpot={activeSpot} onSpotClick={handleSpotClick} />
+
+        <Drawer
+          open={!!activeSpot}
+          onClose={closeSpot}
+          placement="right"
+          width={380}
+          mask={false}
+          rootClassName="detail-drawer"
+          title={activeSpot?.name}
+          footer={activeSpot ? <Link onClick={() => void copyLink()}>复制链接</Link> : null}
+        >
+          {activeSpot && (
+            <>
+              <Descriptions column={1} size="small" style={{ marginBottom: 16 }}>
+                <Descriptions.Item label="时间">{formatSpotDateTime(activeSpot)}</Descriptions.Item>
+                {activeSpot.address && (
+                  <Descriptions.Item label="地址">{activeSpot.address}</Descriptions.Item>
+                )}
+              </Descriptions>
+
+              {activeSpot.essay && (
+                <>
+                  <Title level={5}>随笔</Title>
+                  <Paragraph>{activeSpot.essay}</Paragraph>
+                </>
+              )}
+
+              {activeSpot.photos && activeSpot.photos.length > 0 ? (
+                <>
+                  <Title level={5} style={{ marginTop: 16 }}>
+                    照片
+                  </Title>
+                  <Image.PreviewGroup>
+                    <Row gutter={[8, 8]}>
+                      {activeSpot.photos.map((src) => (
+                        <Col span={12} key={src}>
+                          <Image src={src} alt={activeSpot.name} style={{ borderRadius: 8 }} />
+                        </Col>
+                      ))}
+                    </Row>
+                  </Image.PreviewGroup>
+                </>
+              ) : (
+                !activeSpot.essay && (
+                  <Empty description="暂无照片与随笔" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                )
+              )}
+            </>
+          )}
+        </Drawer>
+      </Layout.Content>
+    </Layout>
+  );
+}
+
+function WorldMap({
+  activeSpot,
+  onSpotClick,
+}: {
+  activeSpot?: Spot;
+  onSpotClick: (spot: Spot) => void;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const controllerRef = useRef<WorldMapController | null>(null);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const controller = new WorldMapController();
+    controllerRef.current = controller;
+    let cancelled = false;
+
+    void controller.init(container, spots, onSpotClick).then(() => {
+      if (!cancelled) setReady(true);
+    });
+
+    return () => {
+      cancelled = true;
+      controller.destroy();
+      controllerRef.current = null;
+      setReady(false);
+    };
+  }, [onSpotClick]);
+
+  useEffect(() => {
+    if (!ready) return;
+    const controller = controllerRef.current;
+    if (!controller) return;
+    if (activeSpot) controller.focusSpot(activeSpot);
+    else controller.showOverview();
+  }, [ready, activeSpot]);
+
+  return (
+    <>
+      <div ref={containerRef} className="world-map" />
+      {ready && (
+        <div className="map-controls-affix">
+          <FloatButton tooltip="中国全景" onClick={() => controllerRef.current?.showOverview()} />
+        </div>
+      )}
+    </>
   );
 }

@@ -9,7 +9,6 @@ export default defineConfig({
   fmt: {
     sortImports: true,
     sortPackageJson: true,
-    sortTailwindClasses: true,
   },
   lint: {
     options: { typeAware: true, typeCheck: true },
