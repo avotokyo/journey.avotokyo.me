@@ -10,11 +10,4 @@ export default defineConfig({
   lint: {
     options: { typeAware: true, typeCheck: true },
   },
-  build: {
-    rolldownOptions: {
-      output: {
-        codeSplitting: true,
-      },
-    },
-  },
 });
