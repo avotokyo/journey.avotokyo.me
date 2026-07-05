@@ -4,7 +4,6 @@ import {
   Drawer,
   Empty,
   Flex,
-  FloatButton,
   Image,
   Layout,
   Menu,
@@ -187,14 +186,5 @@ function WorldMap({
     controllerRef.current?.showOverview();
   }, [ready, overviewTick]);
 
-  return (
-    <>
-      <div ref={containerRef} className="world-map" />
-      {ready && (
-        <div className="map-controls-affix">
-          <FloatButton tooltip="中国全景" onClick={() => controllerRef.current?.showOverview()} />
-        </div>
-      )}
-    </>
-  );
+  return <div ref={containerRef} className="world-map" />;
 }
