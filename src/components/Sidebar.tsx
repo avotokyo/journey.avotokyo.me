@@ -1,5 +1,6 @@
 import { Flex, Layout, Menu, Space, Typography } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
+
 import type { SiteProfile, Spot } from "../data/schema.ts";
 import { groupSpotsByDate } from "../data/schema.ts";
 

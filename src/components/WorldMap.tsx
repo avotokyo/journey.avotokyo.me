@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
-import { FloatButton } from "antd";
 import { GlobalOutlined, EnvironmentOutlined, AppstoreOutlined } from "@ant-design/icons";
-import type { Spot } from "../data/schema.ts";
+import { FloatButton } from "antd";
+import { useEffect, useRef, useState } from "react";
+
 import { WorldMapController } from "../amap.ts";
+import type { Spot } from "../data/schema.ts";
 
 interface WorldMapProps {
   spots: Spot[];

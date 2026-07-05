@@ -1,12 +1,13 @@
+import { Button, Layout, Result } from "antd";
 import { useCallback, useMemo } from "react";
 import { HashRouter, Route, Routes, useNavigate, useParams } from "react-router-dom";
-import { Button, Layout, Result } from "antd";
-import spotsData from "./data/spots.json";
-import site from "./data/site.json";
-import { getAllSpots, getSpotById, type SiteProfile, type Spot } from "./data/schema.ts";
+
 import Sidebar from "./components/Sidebar.tsx";
-import WorldMap from "./components/WorldMap.tsx";
 import SpotDetailDrawer from "./components/SpotDetailDrawer.tsx";
+import WorldMap from "./components/WorldMap.tsx";
+import { getAllSpots, getSpotById, type SiteProfile, type Spot } from "./data/schema.ts";
+import site from "./data/site.json";
+import spotsData from "./data/spots.json";
 
 function AppLayout() {
   const { id } = useParams();

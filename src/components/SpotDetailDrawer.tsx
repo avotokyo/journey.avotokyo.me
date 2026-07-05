@@ -1,5 +1,6 @@
 import { CopyOutlined } from "@ant-design/icons";
 import { Col, Descriptions, Drawer, Empty, Image, Row, Typography, message } from "antd";
+
 import type { Spot } from "../data/schema.ts";
 import { formatSpotDateTime } from "../data/schema.ts";
 
