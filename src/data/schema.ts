@@ -31,3 +31,15 @@ export function groupSpotsByDate(spots: Spot[]): Map<string, Spot[]> {
   }
   return groups;
 }
+
+export function getAllSpots(spots: Spot[]): Spot[] {
+  return [...spots].sort((a, b) => {
+    const dateCmp = b.date.localeCompare(a.date);
+    if (dateCmp !== 0) return dateCmp;
+    return (b.time ?? "").localeCompare(a.time ?? "");
+  });
+}
+
+export function getSpotById(spots: Spot[], id: string): Spot | undefined {
+  return spots.find((s) => s.id === id);
+}

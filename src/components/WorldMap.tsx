@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
+import { FloatButton } from "antd";
+import { GlobalOutlined, EnvironmentOutlined, AppstoreOutlined } from "@ant-design/icons";
 import type { Spot } from "../data/schema.ts";
-import { WorldMapController } from "../lib/amap/world-map-controller.ts";
-import MapControls from "./MapControls.tsx";
+import { WorldMapController } from "../amap.ts";
 
 interface WorldMapProps {
   spots: Spot[];
@@ -50,11 +51,23 @@ export default function WorldMap({ spots, activeSpot, onSpotClick }: WorldMapPro
       <div ref={containerRef} className="world-map" />
       {ready && map && (
         <div className="map-controls-affix">
-          <MapControls
-            onReset={() => map.resetView()}
-            onToggleStyle={() => map.toggleMapStyle()}
-            onFitAll={() => map.fitAll()}
-          />
+          <FloatButton.Group shape="circle" className="map-float-buttons">
+            <FloatButton
+              icon={<GlobalOutlined />}
+              tooltip="重置视图"
+              onClick={() => map.resetView()}
+            />
+            <FloatButton
+              icon={<AppstoreOutlined />}
+              tooltip="切换地图样式"
+              onClick={() => map.toggleMapStyle()}
+            />
+            <FloatButton
+              icon={<EnvironmentOutlined />}
+              tooltip="适应全部标记"
+              onClick={() => map.fitAll()}
+            />
+          </FloatButton.Group>
         </div>
       )}
     </>
