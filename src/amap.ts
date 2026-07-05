@@ -3,7 +3,7 @@
  *
  * 职责：
  * - 懒加载高德 JS API（单例 Promise，避免重复请求）
- * - 在地图上渲染景点标记（自定义圆点 DOM）
+ * - 在地图上渲染景点标记
  * - 管理两种视图：中国全景概览 / 选中景点街道级聚焦
  *
  * 默认显示中国全景，选中景点后放大至街道级并预留右侧抽屉空间。
@@ -30,10 +30,6 @@ function loadAMap(): Promise<typeof AMap> {
   return amapPromise;
 }
 
-/** 地图标记圆点的像素尺寸 */
-const DOT_SIZE = 20;
-/** 标记圆点颜色（橙色） */
-const DOT_COLOR = "#f97316";
 /** 聚焦景点时的目标缩放级别（街道级） */
 const FOCUS_ZOOM = 16;
 /** 中国全景视图的中心点 [经度, 纬度] */
@@ -45,28 +41,6 @@ const CHINA_ZOOM = 4;
  * 右侧预留 400px 给详情抽屉，避免标记点被遮挡。
  */
 const DRAWER_PADDING: [number, number, number, number] = [80, 400, 80, 80];
-
-/** 创建自定义 HTML 标记圆点 */
-function createDotElement(): HTMLDivElement {
-  const el = document.createElement("div");
-  Object.assign(el.style, {
-    width: `${DOT_SIZE}px`,
-    height: `${DOT_SIZE}px`,
-    borderRadius: "50%",
-    background: DOT_COLOR,
-    border: "3px solid white",
-    boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
-    cursor: "pointer",
-    transition: "transform 0.15s",
-  });
-  el.addEventListener("mouseenter", () => {
-    el.style.transform = "scale(1.3)";
-  });
-  el.addEventListener("mouseleave", () => {
-    el.style.transform = "";
-  });
-  return el;
-}
 
 /**
  * 地图控制器：封装 AMap.Map 实例的生命周期与交互逻辑。
@@ -143,9 +117,6 @@ export class WorldMapController {
     for (const spot of spots) {
       const marker = new AMap.Marker({
         position: spot.location,
-        content: createDotElement(),
-        // 偏移使圆点中心对准坐标点
-        offset: new AMap.Pixel(-DOT_SIZE / 2, -DOT_SIZE / 2),
         title: spot.name,
       });
 

@@ -25,6 +25,7 @@ import {
   Layout,
   Menu,
   Row,
+  Space,
   Typography,
   message,
 } from "antd";
@@ -62,11 +63,7 @@ export default function App() {
     children: groups.get(date)!.map((spot) => ({
       key: spot.id,
       label: spot.name,
-      extra: (
-        <Text type="secondary" style={{ fontSize: 12 }}>
-          {spot.time ?? ""}
-        </Text>
-      ),
+      extra: <Text type="secondary">{spot.time ?? ""}</Text>,
     })),
   }));
 
@@ -88,15 +85,10 @@ export default function App() {
 
   return (
     <Layout style={{ height: "100vh", overflow: "hidden" }}>
-      {/* 左侧：按日期分组的景点列表 */}
-      <Layout.Sider width={300} theme="light" style={{ height: "100vh", overflow: "auto" }}>
-        <Flex vertical gap={16} style={{ padding: "24px 12px" }}>
-          <Title
-            level={4}
-            style={{ margin: 0, cursor: "pointer", userSelect: "none" }}
-            onClick={goHome}
-          >
-            牛油果旅行记✈️
+      <Layout.Sider width={300} theme="light" style={{ overflow: "auto", padding: "24px 12px" }}>
+        <Flex vertical gap={16}>
+          <Title level={4} style={{ margin: 0 }}>
+            <Link onClick={goHome}>牛油果旅行记✈️</Link>
           </Title>
           <Menu
             mode="inline"
@@ -107,18 +99,13 @@ export default function App() {
         </Flex>
       </Layout.Sider>
 
-      {/* 右侧：地图 + 浮动详情抽屉 */}
-      <Layout.Content style={{ position: "relative", height: "100vh", overflow: "hidden" }}>
+      <Layout.Content style={{ position: "relative", padding: 0, overflow: "hidden" }}>
         <WorldMap
           activeSpot={activeSpot}
           overviewTick={overviewTick}
           onSpotClick={handleSpotClick}
         />
 
-        {/*
-          详情抽屉：无遮罩，浮于地图上方，地图区域仍可交互。
-          选中景点时从右侧滑出，展示时间、地址、随笔与照片。
-        */}
         <Drawer
           open={!!activeSpot}
           onClose={closeSpot}
@@ -127,23 +114,13 @@ export default function App() {
           mask={false}
           getContainer={false}
           rootStyle={{ position: "absolute", inset: 0, pointerEvents: "none" }}
-          styles={{
-            wrapper: {
-              pointerEvents: "auto",
-              top: 16,
-              bottom: 16,
-              height: "auto",
-              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
-              borderRadius: 8,
-              overflow: "hidden",
-            },
-          }}
+          styles={{ wrapper: { pointerEvents: "auto" } }}
           title={activeSpot?.name}
           footer={activeSpot ? <Link onClick={() => void copyLink()}>复制链接</Link> : null}
         >
           {activeSpot && (
-            <>
-              <Descriptions column={1} size="small" style={{ marginBottom: 16 }}>
+            <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+              <Descriptions column={1} size="small">
                 <Descriptions.Item label="时间">{formatSpotDateTime(activeSpot)}</Descriptions.Item>
                 {activeSpot.address && (
                   <Descriptions.Item label="地址">{activeSpot.address}</Descriptions.Item>
@@ -159,14 +136,12 @@ export default function App() {
 
               {activeSpot.photos && activeSpot.photos.length > 0 ? (
                 <>
-                  <Title level={5} style={{ marginTop: 16 }}>
-                    照片
-                  </Title>
+                  <Title level={5}>照片</Title>
                   <Image.PreviewGroup>
                     <Row gutter={[8, 8]}>
                       {activeSpot.photos.map((src) => (
                         <Col span={12} key={src}>
-                          <Image src={src} alt={activeSpot.name} style={{ borderRadius: 8 }} />
+                          <Image src={src} alt={activeSpot.name} />
                         </Col>
                       ))}
                     </Row>
@@ -177,7 +152,7 @@ export default function App() {
                   <Empty description="暂无照片与随笔" image={Empty.PRESENTED_IMAGE_SIMPLE} />
                 )
               )}
-            </>
+            </Space>
           )}
         </Drawer>
       </Layout.Content>
@@ -239,5 +214,5 @@ function WorldMap({
     controllerRef.current?.showOverview();
   }, [ready, overviewTick]);
 
-  return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />;
+  return <div ref={containerRef} style={{ position: "absolute", inset: 0 }} />;
 }
