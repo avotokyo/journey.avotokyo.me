@@ -46,13 +46,25 @@ const CHINA_ZOOM = 4;
  */
 const DRAWER_PADDING: [number, number, number, number] = [80, 400, 80, 80];
 
-/** 创建自定义 HTML 标记元素，样式由 .map-dot 控制 */
+/** 创建自定义 HTML 标记圆点 */
 function createDotElement(): HTMLDivElement {
   const el = document.createElement("div");
-  el.className = "map-dot";
-  el.style.setProperty("--dot-color", DOT_COLOR);
-  el.style.width = `${DOT_SIZE}px`;
-  el.style.height = `${DOT_SIZE}px`;
+  Object.assign(el.style, {
+    width: `${DOT_SIZE}px`,
+    height: `${DOT_SIZE}px`,
+    borderRadius: "50%",
+    background: DOT_COLOR,
+    border: "3px solid white",
+    boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
+    cursor: "pointer",
+    transition: "transform 0.15s",
+  });
+  el.addEventListener("mouseenter", () => {
+    el.style.transform = "scale(1.3)";
+  });
+  el.addEventListener("mouseleave", () => {
+    el.style.transform = "";
+  });
   return el;
 }
 

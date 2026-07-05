@@ -87,11 +87,15 @@ export default function App() {
   };
 
   return (
-    <Layout className="map-app">
+    <Layout style={{ height: "100vh", overflow: "hidden" }}>
       {/* 左侧：按日期分组的景点列表 */}
-      <Layout.Sider width={300} className="app-sidebar" theme="light">
-        <Flex vertical gap={16} className="sidebar-inner">
-          <Title level={4} className="site-title" onClick={goHome}>
+      <Layout.Sider width={300} theme="light" style={{ height: "100vh", overflow: "auto" }}>
+        <Flex vertical gap={16} style={{ padding: "24px 12px" }}>
+          <Title
+            level={4}
+            style={{ margin: 0, cursor: "pointer", userSelect: "none" }}
+            onClick={goHome}
+          >
             牛油果旅行记✈️
           </Title>
           <Menu
@@ -104,7 +108,7 @@ export default function App() {
       </Layout.Sider>
 
       {/* 右侧：地图 + 浮动详情抽屉 */}
-      <Layout.Content className="map-stage">
+      <Layout.Content style={{ position: "relative", height: "100vh", overflow: "hidden" }}>
         <WorldMap
           activeSpot={activeSpot}
           overviewTick={overviewTick}
@@ -112,7 +116,7 @@ export default function App() {
         />
 
         {/*
-          详情抽屉：无遮罩，浮于地图上方（见 style.css .detail-drawer）。
+          详情抽屉：无遮罩，浮于地图上方，地图区域仍可交互。
           选中景点时从右侧滑出，展示时间、地址、随笔与照片。
         */}
         <Drawer
@@ -121,7 +125,19 @@ export default function App() {
           placement="right"
           width={380}
           mask={false}
-          rootClassName="detail-drawer"
+          getContainer={false}
+          rootStyle={{ position: "absolute", inset: 0, pointerEvents: "none" }}
+          styles={{
+            wrapper: {
+              pointerEvents: "auto",
+              top: 16,
+              bottom: 16,
+              height: "auto",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
+              borderRadius: 8,
+              overflow: "hidden",
+            },
+          }}
           title={activeSpot?.name}
           footer={activeSpot ? <Link onClick={() => void copyLink()}>复制链接</Link> : null}
         >
@@ -223,5 +239,5 @@ function WorldMap({
     controllerRef.current?.showOverview();
   }, [ready, overviewTick]);
 
-  return <div ref={containerRef} className="world-map" />;
+  return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />;
 }
