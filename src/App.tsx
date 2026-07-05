@@ -125,7 +125,6 @@ export default function App() {
             onClose={closeSpot}
             placement="right"
             width={DRAWER_WIDTH}
-            mask={false}
             getContainer={false}
             rootStyle={{ position: "absolute", inset: 0, pointerEvents: "none" }}
             styles={{
