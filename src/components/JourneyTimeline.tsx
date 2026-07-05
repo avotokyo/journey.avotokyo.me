@@ -1,8 +1,8 @@
-import { Timeline, Typography } from "antd";
+import { Space, Timeline, Typography } from "antd";
 import type { Journey, Waypoint } from "../data/schema.ts";
 import { groupWaypointsByDate } from "../data/schema.ts";
 
-const { Title, Text } = Typography;
+const { Title, Text, Link } = Typography;
 
 interface JourneyTimelineProps {
   journey: Journey;
@@ -28,30 +28,25 @@ export default function JourneyTimeline({ journey, onSelect }: JourneyTimelinePr
       key: wp.id,
       label: formatDate(date),
       children: (
-        <button type="button" className="timeline-entry" onClick={() => onSelect(wp)}>
-          <Text strong>{wp.name}</Text>
-          {wp.time && (
-            <Text type="secondary" className="timeline-time">
-              {" "}
-              {wp.time}
+        <Space direction="vertical" size={0}>
+          <Link onClick={() => onSelect(wp)}>
+            {wp.name}
+            {wp.time ? ` · ${wp.time}` : ""}
+          </Link>
+          {wp.notes && (
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              {wp.notes}
             </Text>
           )}
-          {wp.notes && (
-            <div>
-              <Text type="secondary" className="timeline-notes">
-                {wp.notes}
-              </Text>
-            </div>
-          )}
-        </button>
+        </Space>
       ),
     }));
   });
 
   return (
-    <div>
+    <>
       <Title level={5}>行程时间线</Title>
-      <Timeline mode="left" items={items} className="journey-timeline" />
-    </div>
+      <Timeline mode="left" items={items} />
+    </>
   );
 }

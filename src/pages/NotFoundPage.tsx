@@ -1,17 +1,22 @@
-import { Link } from "react-router-dom";
-import { Button, Layout, Typography } from "antd";
-
-const { Title, Paragraph } = Typography;
+import { useNavigate } from "react-router-dom";
+import { Button, Layout, Result } from "antd";
 
 export default function NotFoundPage() {
+  const navigate = useNavigate();
+
   return (
     <Layout className="map-app">
-      <Layout.Content className="not-found">
-        <Title level={2}>404</Title>
-        <Paragraph type="secondary">页面不存在</Paragraph>
-        <Link to="/">
-          <Button type="primary">返回首页</Button>
-        </Link>
+      <Layout.Content>
+        <Result
+          status="404"
+          title="404"
+          subTitle="页面不存在"
+          extra={
+            <Button type="primary" onClick={() => navigate("/")}>
+              返回首页
+            </Button>
+          }
+        />
       </Layout.Content>
     </Layout>
   );

@@ -1,7 +1,7 @@
-import { Image, Typography } from "antd";
+import { Col, Image, Row, Typography } from "antd";
 import type { Journey } from "../data/schema.ts";
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 interface PhotoGalleryProps {
   journey: Journey;
@@ -15,18 +15,20 @@ export default function PhotoGallery({ journey }: PhotoGalleryProps) {
   if (photos.length === 0) return null;
 
   return (
-    <div>
+    <>
       <Title level={5}>照片</Title>
       <Image.PreviewGroup>
-        <div className="photo-grid">
+        <Row gutter={[8, 8]}>
           {photos.map((photo) => (
-            <div key={photo.src} className="photo-item">
-              <Image src={photo.src} alt={photo.caption} />
-              <span className="photo-caption">{photo.caption}</span>
-            </div>
+            <Col span={8} key={photo.src}>
+              <Image src={photo.src} alt={photo.caption} style={{ borderRadius: 8 }} />
+              <Text type="secondary" style={{ fontSize: 12, display: "block", marginTop: 4 }}>
+                {photo.caption}
+              </Text>
+            </Col>
           ))}
-        </div>
+        </Row>
       </Image.PreviewGroup>
-    </div>
+    </>
   );
 }

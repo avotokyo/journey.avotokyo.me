@@ -1,4 +1,4 @@
-import { Button, Space } from "antd";
+import { FloatButton } from "antd";
 import { GlobalOutlined, EnvironmentOutlined, AppstoreOutlined } from "@ant-design/icons";
 
 interface MapControlsProps {
@@ -9,28 +9,10 @@ interface MapControlsProps {
 
 export default function MapControls({ onReset, onToggleStyle, onFitAll }: MapControlsProps) {
   return (
-    <Space className="map-controls">
-      <Button
-        type="default"
-        shape="circle"
-        icon={<GlobalOutlined />}
-        onClick={onReset}
-        title="重置视图"
-      />
-      <Button
-        type="default"
-        shape="circle"
-        icon={<AppstoreOutlined />}
-        onClick={onToggleStyle}
-        title="切换地图样式"
-      />
-      <Button
-        type="default"
-        shape="circle"
-        icon={<EnvironmentOutlined />}
-        onClick={onFitAll}
-        title="适应全部标记"
-      />
-    </Space>
+    <FloatButton.Group shape="circle" className="map-float-buttons">
+      <FloatButton icon={<GlobalOutlined />} tooltip="重置视图" onClick={onReset} />
+      <FloatButton icon={<AppstoreOutlined />} tooltip="切换地图样式" onClick={onToggleStyle} />
+      <FloatButton icon={<EnvironmentOutlined />} tooltip="适应全部标记" onClick={onFitAll} />
+    </FloatButton.Group>
   );
 }

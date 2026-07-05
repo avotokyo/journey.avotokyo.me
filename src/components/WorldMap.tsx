@@ -44,15 +44,6 @@ export default function WorldMap({ points, zoom, center }: WorldMapProps) {
     controllerRef.current?.setCategoryFilter(activeCategories);
   }, [activeCategories, ready]);
 
-  const toggleCategory = (category: PlaceCategory) => {
-    setActiveCategories((prev) => {
-      const next = new Set(prev);
-      if (next.has(category)) next.delete(category);
-      else next.add(category);
-      return next;
-    });
-  };
-
   const map = controllerRef.current;
 
   return (
@@ -60,10 +51,10 @@ export default function WorldMap({ points, zoom, center }: WorldMapProps) {
       <div ref={containerRef} className="world-map" />
       {ready && map && (
         <>
-          <div className="map-overlay map-overlay-legend">
-            <MapLegend activeCategories={activeCategories} onToggle={toggleCategory} />
+          <div className="map-legend-affix">
+            <MapLegend activeCategories={activeCategories} onChange={setActiveCategories} />
           </div>
-          <div className="map-overlay map-overlay-controls">
+          <div className="map-controls-affix">
             <MapControls
               onReset={() => map.resetView()}
               onToggleStyle={() => map.toggleMapStyle()}

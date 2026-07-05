@@ -1,7 +1,6 @@
 import { useRef } from "react";
-import { Link, useParams } from "react-router-dom";
-import { Button, Card, Layout, Typography } from "antd";
-import { ArrowLeftOutlined } from "@ant-design/icons";
+import { useNavigate, useParams } from "react-router-dom";
+import { Breadcrumb, Button, Descriptions, Drawer, Layout, Result, Tabs } from "antd";
 import { getAllJourneys, getJourneyById, getSiteProfile } from "../data/index.ts";
 import Sidebar from "../components/Sidebar.tsx";
 import JourneyMap, { type JourneyMapRef } from "../components/JourneyMap.tsx";
@@ -10,55 +9,83 @@ import RoutePanel from "../components/RoutePanel.tsx";
 import PhotoGallery from "../components/PhotoGallery.tsx";
 import SharePanel from "../components/SharePanel.tsx";
 
-const { Title, Paragraph, Text } = Typography;
-
 export default function JourneyDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const mapRef = useRef<JourneyMapRef>(null);
   const journey = id ? getJourneyById(id) : undefined;
 
   if (!journey) {
     return (
       <Layout className="map-app">
-        <Layout.Content className="not-found">
-          <Title level={3}>未找到旅行记录</Title>
-          <Paragraph type="secondary">找不到 ID 为 "{id}" 的旅程。</Paragraph>
-          <Link to="/">
-            <Button type="primary">返回地图</Button>
-          </Link>
+        <Layout.Content>
+          <Result
+            status="warning"
+            title="未找到旅行记录"
+            subTitle={`找不到 ID 为 "${id}" 的旅程。`}
+            extra={
+              <Button type="primary" onClick={() => navigate("/")}>
+                返回地图
+              </Button>
+            }
+          />
         </Layout.Content>
       </Layout>
     );
   }
+
+  const tabItems = [
+    {
+      key: "timeline",
+      label: "时间线",
+      children: (
+        <JourneyTimeline
+          journey={journey}
+          onSelect={(wp) => mapRef.current?.focusWaypoint(wp.id)}
+        />
+      ),
+    },
+    {
+      key: "routes",
+      label: "路线",
+      children: <RoutePanel journey={journey} />,
+    },
+    {
+      key: "photos",
+      label: "照片",
+      children: <PhotoGallery journey={journey} />,
+    },
+  ];
 
   return (
     <Layout className="map-app">
       <Sidebar profile={getSiteProfile()} journeys={getAllJourneys()} />
       <Layout.Content className="map-stage">
         <JourneyMap ref={mapRef} journey={journey} />
-        <Card className="detail-panel" bordered={false}>
-          <Link to="/" className="back-link">
-            <ArrowLeftOutlined /> 地图
-          </Link>
-          <Title level={4}>{journey.title}</Title>
-          <Text type="secondary">
-            {journey.startDate} — {journey.endDate}
-          </Text>
-          {journey.description && (
-            <Paragraph type="secondary" className="journey-desc">
-              {journey.description}
-            </Paragraph>
-          )}
-          <SharePanel journey={journey} />
-          <div className="detail-panel-body">
-            <JourneyTimeline
-              journey={journey}
-              onSelect={(wp) => mapRef.current?.focusWaypoint(wp.id)}
-            />
-            <RoutePanel journey={journey} />
-            <PhotoGallery journey={journey} />
-          </div>
-        </Card>
+        <Drawer
+          open
+          placement="right"
+          width={380}
+          mask={false}
+          closable={false}
+          rootClassName="detail-drawer"
+          title={journey.title}
+          extra={<SharePanel journey={journey} />}
+        >
+          <Breadcrumb
+            style={{ marginBottom: 16 }}
+            items={[{ title: <a onClick={() => navigate("/")}>地图</a> }, { title: journey.title }]}
+          />
+          <Descriptions column={1} size="small" style={{ marginBottom: 16 }}>
+            <Descriptions.Item label="日期">
+              {journey.startDate} — {journey.endDate}
+            </Descriptions.Item>
+            {journey.description && (
+              <Descriptions.Item label="简介">{journey.description}</Descriptions.Item>
+            )}
+          </Descriptions>
+          <Tabs items={tabItems} />
+        </Drawer>
       </Layout.Content>
     </Layout>
   );

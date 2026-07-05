@@ -1,16 +1,21 @@
-import { Button, Image, Space, Typography, message } from "antd";
-import { CopyOutlined, DownloadOutlined, PictureOutlined } from "@ant-design/icons";
+import { Button, Dropdown, Image, Modal, Space, message } from "antd";
+import type { MenuProps } from "antd";
+import {
+  CopyOutlined,
+  DownloadOutlined,
+  PictureOutlined,
+  ShareAltOutlined,
+} from "@ant-design/icons";
 import { useState } from "react";
 import type { Journey } from "../data/schema.ts";
 import { staticMapUrl } from "../lib/amap/web-service.ts";
-
-const { Link: TextLink } = Typography;
 
 interface SharePanelProps {
   journey: Journey;
 }
 
 export default function SharePanel({ journey }: SharePanelProps) {
+  const [staticMapOpen, setStaticMapOpen] = useState(false);
   const [staticMapSrc, setStaticMapSrc] = useState<string | null>(null);
   const shareUrl = `${window.location.origin}${window.location.pathname}#/journey/${journey.id}`;
 
@@ -29,33 +34,49 @@ export default function SharePanel({ journey }: SharePanelProps) {
     URL.revokeObjectURL(url);
   };
 
-  const generateStaticMap = () => {
+  const openStaticMap = () => {
     const center = journey.waypoints[0]?.location ?? [116.4074, 39.9042];
     const markers = journey.waypoints.map((wp) => ({ location: wp.location, label: wp.name[0] }));
     setStaticMapSrc(staticMapUrl(center, markers));
+    setStaticMapOpen(true);
   };
 
+  const menuItems: MenuProps["items"] = [
+    { key: "copy", icon: <CopyOutlined />, label: "复制分享链接", onClick: () => void copyLink() },
+    { key: "export", icon: <DownloadOutlined />, label: "导出 JSON", onClick: exportJson },
+    { key: "map", icon: <PictureOutlined />, label: "生成静态地图", onClick: openStaticMap },
+  ];
+
   return (
-    <div className="share-panel">
-      <Space wrap size="small">
-        <Button size="small" icon={<CopyOutlined />} onClick={() => void copyLink()}>
-          复制链接
+    <>
+      <Dropdown menu={{ items: menuItems }} trigger={["click"]}>
+        <Button size="small" icon={<ShareAltOutlined />}>
+          分享
         </Button>
-        <Button size="small" icon={<DownloadOutlined />} onClick={exportJson}>
-          导出 JSON
-        </Button>
-        <Button size="small" icon={<PictureOutlined />} onClick={generateStaticMap}>
-          静态地图
-        </Button>
-      </Space>
-      {staticMapSrc && (
-        <div className="static-map-preview">
-          <Image src={staticMapSrc} alt="静态地图预览" />
-          <TextLink href={staticMapSrc} download="map.png">
-            下载地图
-          </TextLink>
-        </div>
-      )}
-    </div>
+      </Dropdown>
+
+      <Modal
+        title="静态地图预览"
+        open={staticMapOpen}
+        onCancel={() => setStaticMapOpen(false)}
+        footer={
+          <Space>
+            <Button onClick={() => setStaticMapOpen(false)}>关闭</Button>
+            {staticMapSrc && (
+              <Button
+                type="primary"
+                href={staticMapSrc}
+                download="map.png"
+                icon={<DownloadOutlined />}
+              >
+                下载地图
+              </Button>
+            )}
+          </Space>
+        }
+      >
+        {staticMapSrc && <Image src={staticMapSrc} alt="静态地图预览" />}
+      </Modal>
+    </>
   );
 }

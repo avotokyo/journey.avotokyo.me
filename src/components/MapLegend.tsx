@@ -1,4 +1,4 @@
-import { Space, Tag } from "antd";
+import { Badge, Card, Checkbox } from "antd";
 import type { PlaceCategory } from "../data/schema.ts";
 import { CATEGORY_COLORS, CATEGORY_LABELS } from "../data/schema.ts";
 
@@ -6,26 +6,22 @@ const CATEGORIES: PlaceCategory[] = ["visited", "stay", "residence", "airport", 
 
 interface MapLegendProps {
   activeCategories: Set<PlaceCategory>;
-  onToggle: (category: PlaceCategory) => void;
+  onChange: (categories: Set<PlaceCategory>) => void;
 }
 
-export default function MapLegend({ activeCategories, onToggle }: MapLegendProps) {
+export default function MapLegend({ activeCategories, onChange }: MapLegendProps) {
   return (
-    <Space wrap className="map-legend" size={4}>
-      {CATEGORIES.map((cat) => {
-        const active = activeCategories.has(cat);
-        return (
-          <Tag.CheckableTag
-            key={cat}
-            checked={active}
-            onChange={() => onToggle(cat)}
-            className="legend-tag"
-          >
-            <span className="legend-dot" style={{ background: CATEGORY_COLORS[cat] }} />
-            {CATEGORY_LABELS[cat]}
-          </Tag.CheckableTag>
-        );
-      })}
-    </Space>
+    <Card size="small" className="map-legend-card">
+      <Checkbox.Group
+        value={[...activeCategories]}
+        onChange={(values) => onChange(new Set(values as PlaceCategory[]))}
+      >
+        {CATEGORIES.map((cat) => (
+          <Checkbox key={cat} value={cat}>
+            <Badge color={CATEGORY_COLORS[cat]} text={CATEGORY_LABELS[cat]} />
+          </Checkbox>
+        ))}
+      </Checkbox.Group>
+    </Card>
   );
 }

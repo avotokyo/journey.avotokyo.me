@@ -1,9 +1,8 @@
-import { Avatar, Layout, List, Typography } from "antd";
-import { Link, useParams } from "react-router-dom";
-import type { Journey } from "../data/schema.ts";
-import type { SiteProfile } from "../data/schema.ts";
+import { Avatar, Flex, Layout, Menu, Space, Typography } from "antd";
+import { useNavigate, useParams } from "react-router-dom";
+import type { Journey, SiteProfile } from "../data/schema.ts";
 
-const { Text, Title } = Typography;
+const { Text, Title, Link } = Typography;
 
 interface SidebarProps {
   profile: SiteProfile;
@@ -12,52 +11,51 @@ interface SidebarProps {
 
 export default function Sidebar({ profile, journeys }: SidebarProps) {
   const { id: activeId } = useParams();
+  const navigate = useNavigate();
 
   return (
     <Layout.Sider width={300} className="app-sidebar" theme="light">
-      <div className="sidebar-inner">
-        <div className="sidebar-profile">
-          <Avatar size={48} src={profile.avatar} className="sidebar-avatar">
+      <Flex vertical gap={16} className="sidebar-inner">
+        <Space direction="vertical" size={4}>
+          <Avatar size={48} src={profile.avatar}>
             {profile.name[0]}
           </Avatar>
-          <Title level={4} className="sidebar-name">
+          <Title level={4} style={{ margin: 0 }}>
             {profile.name}
           </Title>
-          <Text type="secondary" className="sidebar-subtitle">
-            {profile.subtitle}
-          </Text>
+          <Text type="secondary">{profile.subtitle}</Text>
           {profile.links && profile.links.length > 0 && (
-            <div className="sidebar-links">
-              {profile.links.map((link) => (
-                <a key={link.url} href={link.url} target="_blank" rel="noopener noreferrer">
-                  {link.label}
-                </a>
+            <Space size="middle" wrap>
+              {profile.links.map((item) => (
+                <Link key={item.url} href={item.url} target="_blank">
+                  {item.label}
+                </Link>
               ))}
-            </div>
+            </Space>
           )}
-        </div>
+        </Space>
 
-        <Text type="secondary" className="sidebar-nav-title">
-          旅程
-        </Text>
-        <List
-          size="small"
-          dataSource={journeys}
-          renderItem={(journey) => (
-            <List.Item className="sidebar-journey-item">
-              <Link
-                to={`/journey/${journey.id}`}
-                className={`sidebar-journey-link${activeId === journey.id ? " active" : ""}`}
-              >
-                <span className="sidebar-journey-title">{journey.title}</span>
-                <Text type="secondary" className="sidebar-journey-meta">
-                  {journey.startDate} · {journey.waypoints.length} 处
-                </Text>
-              </Link>
-            </List.Item>
-          )}
+        <Menu
+          mode="inline"
+          selectedKeys={activeId ? [activeId] : []}
+          items={[
+            {
+              type: "group",
+              label: "旅程",
+              children: journeys.map((journey) => ({
+                key: journey.id,
+                label: journey.title,
+                extra: (
+                  <Text type="secondary" style={{ fontSize: 12 }}>
+                    {journey.waypoints.length} 处
+                  </Text>
+                ),
+              })),
+            },
+          ]}
+          onClick={({ key }) => navigate(`/journey/${key}`)}
         />
-      </div>
+      </Flex>
     </Layout.Sider>
   );
 }
