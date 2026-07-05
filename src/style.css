@@ -91,30 +91,3 @@ body,
   border-radius: 8px;
   overflow: hidden;
 }
-
-/* ── 移动端适配（≤768px） ── */
-@media (max-width: 768px) {
-  /* 侧栏改为顶部横条，限制最大高度避免挤压地图 */
-  .app-sidebar {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    max-height: 35vh;
-  }
-
-  /* 地图占据侧栏以下的剩余视口高度 */
-  .map-stage {
-    height: calc(100vh - 35vh);
-  }
-
-  /* 抽屉改为底部全宽弹出，圆角仅在顶部 */
-  .detail-drawer .ant-drawer-content-wrapper {
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    top: auto !important;
-    bottom: 0 !important;
-    max-height: 45vh;
-    border-radius: 16px 16px 0 0;
-  }
-}
