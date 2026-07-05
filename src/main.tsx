@@ -1,8 +1,8 @@
 /**
- * 应用入口：挂载 React 根节点。
+ * 应用入口。
  *
- * 使用 StrictMode 在开发环境下对组件做双重渲染检查，
- * 帮助发现副作用与过时 API 的使用问题。
+ * ConfigProvider 提供中文 locale 与 Ant Design 默认 design token；
+ * AntApp 使 message 等静态 API 继承主题上下文。
  */
 import { App as AntApp, ConfigProvider } from "antd";
 import zhCN from "antd/locale/zh_CN";

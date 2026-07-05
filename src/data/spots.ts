@@ -1,8 +1,8 @@
 /**
- * 景点数据层：类型定义、排序、分组与 Hash 路由状态管理。
+ * 景点数据层：类型定义、排序、分组与 Hash 路由。
  *
- * 数据来源为 spots.json，运行时按日期/时间排序。
- * 选中状态通过 URL Hash（#/spot/:id）同步，便于分享深链接且无需引入路由库。
+ * spots 全局按日期+时间倒序；groupSpotsByDate 分组内按时间升序。
+ * 选中状态通过 URL Hash（#/spot/:id）同步，便于分享深链接。
  */
 import rawSpots from "./spots.json";
 
