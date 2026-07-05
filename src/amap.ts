@@ -19,6 +19,7 @@ function loadAMap(): Promise<typeof AMap> {
 }
 
 const MAP_STYLES = ["amap://styles/whitesmoke", "amap://styles/normal"] as const;
+const DOT_SIZE = 20;
 const DOT_COLOR = "#f97316";
 const FOCUS_ZOOM = 16;
 const DRAWER_PADDING: [number, number, number, number] = [80, 400, 80, 80];
@@ -27,6 +28,8 @@ function createDotElement(): HTMLDivElement {
   const el = document.createElement("div");
   el.className = "map-dot";
   el.style.setProperty("--dot-color", DOT_COLOR);
+  el.style.width = `${DOT_SIZE}px`;
+  el.style.height = `${DOT_SIZE}px`;
   return el;
 }
 
@@ -102,7 +105,7 @@ export class WorldMapController {
       const marker = new AMap.Marker({
         position: spot.location,
         content: createDotElement(),
-        offset: new AMap.Pixel(-6, -6),
+        offset: new AMap.Pixel(-DOT_SIZE / 2, -DOT_SIZE / 2),
         title: spot.name,
       });
 
