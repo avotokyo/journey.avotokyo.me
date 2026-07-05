@@ -1,4 +1,4 @@
-import { Avatar, Flex, Layout, Menu, Space, Typography } from "antd";
+import { Flex, Layout, Menu, Space, Typography } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import type { SiteProfile, Spot } from "../data/schema.ts";
 import { CATEGORY_LABELS, groupSpotsByDate } from "../data/schema.ts";
@@ -34,9 +34,6 @@ export default function Sidebar({ profile, spots }: SidebarProps) {
     <Layout.Sider width={300} className="app-sidebar" theme="light">
       <Flex vertical gap={16} className="sidebar-inner">
         <Space direction="vertical" size={4}>
-          <Avatar size={48} src={profile.avatar}>
-            {profile.name[0]}
-          </Avatar>
           <Title level={4} style={{ margin: 0 }}>
             {profile.name}
           </Title>

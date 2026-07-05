@@ -31,7 +31,6 @@ export interface Spot {
 export interface SiteProfile {
   name: string;
   subtitle: string;
-  avatar?: string;
   links?: Array<{ label: string; url: string }>;
 }
 
