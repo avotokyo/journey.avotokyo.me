@@ -1,50 +1,83 @@
 # 牛油果旅行记
 
-个人旅行地图：在地图上浏览景点，查看随笔与照片。站点：[journey.avotokyo.me](https://journey.avotokyo.me)
+个人旅行地图：在地图上浏览景点，查看随笔、照片、花费与感受。站点：[journey.avotokyo.me](https://journey.avotokyo.me)
 
 ## 功能
 
-- 侧栏按日期分组浏览景点，点击聚焦地图并打开详情抽屉
-- 地图使用高德 `CircleMarker` 标记景点，支持中国全景 / 街道级聚焦
-- 详情抽屉展示时间、地址、随笔与照片，可复制深链接（`#/spot/:id`）
-- 点击标题回到地图全景
+- **旅程概览**：顶栏实时展示景点数、城市数、天数、总花费四项统计
+- **按日分组导航**：侧栏 Menu 按日期倒序分组，日内按时间升序，每组标注当日城市
+- **地图标记**：高德 `CircleMarker` 标注景点，支持中国全景 ↔ 街道级聚焦切换
+- **详情抽屉**：评分（`Rate`）、分类标签、天气/同行/花费元信息卡、随笔、4:3 照片网格
+- **深链接分享**：URL Hash（`#/spot/:id`）驱动选中态，可复制单个景点的可分享链接
+- **无遮罩抽屉**：详情抽屉悬浮于地图之上，地图仍可交互
 
 ## 技术栈
 
-React 19 · TypeScript · Vite+ · Ant Design 6 · 高德地图 JS API 2.0
+React 19 · TypeScript · Vite+ · Ant Design 6 · @ant-design/icons 6 · 高德地图 JS API 2.0
 
-UI 遵循 Ant Design 默认 design token（`ConfigProvider` + `AntApp`），无自定义主题色。
+UI 严格遵循 Ant Design v6 默认 design token（`ConfigProvider` + `AntApp`），未自定义主题色：主功能色 `#1677FF`、14px 基础字号、4px 网格、只用 400/600 两种字重。
+
+## 视觉规范对齐
+
+界面按 [Ant Design v6 design.md](https://ant.design/design.md) 的视觉语言构建：
+
+- **三层表面**：`bg-layout` 页面底 / `bg-container` 卡片与侧栏 / `bg-elevated` 抽屉悬浮
+- **一屏一个 primary**：全站唯一 primary 按钮是"复制链接"
+- **预设色仅用于分类**：Tag 用 geekblue / gold / purple / cyan… 表示景点类型，主功能色不复用
+- **平铺优先**：层级靠边框和淡色底承担，阴影只出现在真正悬浮的抽屉与 Alert
+- **图标化控件**：Header、Menu、Descriptions、按钮均配 Outlined 图标
 
 ## 项目结构
 
 ```
 src/
-├── main.tsx      # 入口，ConfigProvider 中文 locale
-├── App.tsx       # 侧栏、地图、详情抽屉
-├── amap.ts       # 高德地图封装（CircleMarker、视图切换）
+├── main.tsx      # 入口，ConfigProvider 中文 locale + AntApp 上下文
+├── App.tsx       # Header（品牌+统计条）| Sider（Menu）| Content（地图+抽屉）
+├── amap.ts       # 高德地图封装（CircleMarker、视图切换、标记高亮）
 └── data/
     ├── spots.json  # 景点数据
-    └── spots.ts    # 类型、排序、Hash 路由
+    └── spots.ts    # 类型、排序、分组、Hash 路由、旅程统计
 ```
 
 选中状态由 URL Hash（`#/spot/:id`）驱动，无需路由库。
 
+## 数据字段
+
+`src/data/spots.json` 中每条景点支持以下字段（`id`/`name`/`location`/`date` 必填，其余可选，缺失时 UI 静默省略）：
+
+| 字段         | 类型               | 说明                                               |
+| ------------ | ------------------ | -------------------------------------------------- |
+| `id`         | `string`           | 唯一标识，用于 Hash 路由与菜单 key                 |
+| `name`       | `string`           | 景点名称                                           |
+| `city`       | `string`           | 所属城市，用于统计与抽屉副标题                     |
+| `address`    | `string`           | 详细地址                                           |
+| `location`   | `[number, number]` | `[经度, 纬度]`                                     |
+| `date`       | `string`           | 到访日期 `YYYY-MM-DD`                              |
+| `time`       | `string`           | 到访时间 `HH:mm`                                   |
+| `essay`      | `string`           | 旅行随笔                                           |
+| `photos`     | `string[]`         | 照片 URL 列表                                      |
+| `weather`    | `string`           | 当日天气，如 `"晴 22℃"`                            |
+| `companions` | `string`           | 同行者，如 `"独自"`、`"与家人"`                    |
+| `cost`       | `number`           | 花费（元），计入总花费                             |
+| `rating`     | `number`           | 主观评分 0–5，支持 0.5 递增                        |
+| `tags`       | `string[]`         | 分类标签，映射到 Ant Design 预设色（见 `App.tsx`） |
+
 ## 本地开发
 
 ```bash
-vp install
+pnpm install
 cp .env.example .env   # 填入高德 Web 端 JS API Key
-vp run dev
+pnpm dev
 ```
 
 其他命令：
 
 ```bash
-vp run build     # 类型检查 + 生产构建
-vp run preview   # 预览构建产物
+pnpm build     # 类型检查 + 生产构建
+pnpm preview   # 预览构建产物
 ```
 
-景点数据编辑 `src/data/spots.json`，字段说明见 `src/data/spots.ts` 中的 `Spot` 接口。
+新增标签类目时，请在 `src/App.tsx` 的 `TAG_COLOR_MAP` 中登记预设色映射，避免落回默认灰。
 
 ## 部署
 

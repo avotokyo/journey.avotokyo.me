@@ -2,13 +2,19 @@
  * 应用主界面。
  *
  * 布局遵循 Ant Design v6 三层表面模型：
- *   - Layout.Header：品牌与旅程概览统计（bg-container，底边框）
- *   - Layout.Sider：按日期分组的景点导航（bg-container，右边框）
- *   - Layout.Content：地图与详情抽屉（bg-layout，抽屉悬浮为 elevated）
+ *   - `Layout.Header`：品牌 + 右侧旅程概览统计条（bg-container + 底边框）
+ *   - `Layout.Sider`：按日期分组的景点导航 + 底部足迹计数（bg-container + 右边框）
+ *   - `Layout.Content`：地图 + 悬浮详情抽屉（bg-layout；抽屉为 elevated，带阴影）
+ *
+ * 视觉纪律（严格对齐 design.md）：
+ *   - 主功能色仅出现在唯一 primary 按钮（复制链接）与地图标记高亮
+ *   - 分类可视化用预设色（geekblue/gold/purple…），通过 `TAG_COLOR_MAP` 集中维护
+ *   - 只使用 400/600 两种字重；间距全部走 `token.margin*` / `token.padding*`
+ *   - 层级由边框、Divider 和淡色底 (`colorFillQuaternary`) 承担，避免多余阴影
  *
  * 状态：
- * - 选中景点由 URL Hash（#/spot/:id）驱动，useSyncExternalStore 订阅
- * - overviewTick 在 Hash 未变时触发地图回到全景（如点击品牌名）
+ *   - 选中景点由 URL Hash（`#/spot/:id`）驱动，`useSyncExternalStore` 订阅
+ *   - `overviewTick` 在 Hash 未变时触发地图回到全景（如点击品牌名）
  */
 import {
   CalendarOutlined,
