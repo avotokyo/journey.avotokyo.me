@@ -5,7 +5,7 @@
  * 逐段展示与 Header 的旅程概览统计。缺失字段在 UI 中会静默省略。
  */
 export interface Spot {
-  /** 唯一标识，用于 Hash 路由与菜单 key */
+  /** 唯一标识，用于路由（`/spot/:id`）与菜单 key */
   id: string;
   /** 景点名称，显示在侧栏菜单与详情抽屉标题 */
   name: string;
@@ -31,7 +31,7 @@ export interface Spot {
   cost?: number;
   /** 主观评分，0-5 分（`Rate` 支持 0.5 递增） */
   rating?: number;
-  /** 标签集合，如 `["历史", "美食"]` */
+  /** 标签集合，如 `["历史", "美食"]`；颜色见 `components/tagColors.ts` */
   tags?: string[];
 }
 

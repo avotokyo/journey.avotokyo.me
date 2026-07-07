@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { journeyRepository } from "../data/journeyRepository";
 import { spotPath } from "../routing/paths";
 
-/** 封装路由驱动的景点选中态与地图全景复位 */
+/** 封装 react-router 驱动的景点选中态与地图全景复位 */
 export function useJourneySelection() {
   const { spotId } = useParams<{ spotId?: string }>();
   const navigate = useNavigate();

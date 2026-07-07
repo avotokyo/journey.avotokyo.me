@@ -2,7 +2,8 @@
  * 应用入口。
  *
  * ConfigProvider 提供中文 locale 与 Ant Design 默认 design token；
- * AntApp 使 message 等静态 API 继承主题上下文。
+ * AntApp 使 message 等静态 API 继承主题上下文；
+ * AppRouter 挂载 HashRouter 与 Routes（适配 GitHub Pages）。
  */
 import { App as AntApp, ConfigProvider } from "antd";
 import zhCN from "antd/locale/zh_CN";

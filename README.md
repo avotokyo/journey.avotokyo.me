@@ -15,11 +15,12 @@
 
 ```tree
 src/
-├── main.tsx                    # 入口，ConfigProvider 中文 locale + AntApp 上下文
+├── main.tsx                    # 入口：ConfigProvider + AntApp + AppRouter
 ├── App.tsx                     # 容器：组装数据与状态，下发 props
 ├── domain/                     # 领域类型与纯函数（排序/分组/统计）
 │   ├── spot.ts
-│   └── journey.ts
+│   ├── journey.ts
+│   └── index.ts
 ├── data/
 │   ├── spots.json              # 景点数据源（唯一数据入口）
 │   └── journeyRepository.ts    # Repository + Facade
@@ -27,9 +28,10 @@ src/
 │   ├── router.tsx              # HashRouter + Routes 定义
 │   └── paths.ts                # 路由路径与分享链接
 ├── hooks/
-│   └── useJourneySelection.ts  # 选中态与地图全景复位
+│   └── useJourneySelection.ts  # react-router 选中态与地图全景复位
 ├── map/
-│   └── amap.ts                 # 高德地图 Adapter（CircleMarker、视图切换）
+│   ├── amap.ts                 # 高德地图 Adapter（CircleMarker、视图切换）
+│   └── index.ts
 └── components/                 # Presenter 组件（纯 props 驱动）
     ├── AppHeader.tsx
     ├── JourneyOverviewStrip.tsx
@@ -48,7 +50,7 @@ src/
 
 | 字段         | 类型               | 说明                                                    |
 | ------------ | ------------------ | ------------------------------------------------------- |
-| `id`         | `string`           | 唯一标识，用于 Hash 路由与菜单 key                      |
+| `id`         | `string`           | 唯一标识，用于路由（`/spot/:id`）与菜单 key             |
 | `name`       | `string`           | 景点名称                                                |
 | `city`       | `string`           | 所属城市，用于统计与抽屉副标题                          |
 | `address`    | `string`           | 详细地址                                                |
@@ -59,7 +61,7 @@ src/
 | `photos`     | `string[]`         | 照片 URL 列表                                           |
 | `weather`    | `string`           | 当日天气，如 `"晴 22℃"`                                 |
 | `companions` | `string`           | 同行者，如 `"独自"`、`"与家人"`                         |
-| `cost`       | `number`           | 花费（元），计入总花费                                  |
+| `cost`       | `number`           | 花费（元），计入总花费（未录入视为 0）                  |
 | `rating`     | `number`           | 主观评分 0–5，支持 0.5 递增                             |
 | `tags`       | `string[]`         | 分类标签，映射到 Ant Design 预设色（见 `tagColors.ts`） |
 
