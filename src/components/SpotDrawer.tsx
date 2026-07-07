@@ -1,8 +1,8 @@
 import { EnvironmentOutlined, LinkOutlined } from "@ant-design/icons";
 import { Button, Drawer, Flex, Typography, theme } from "antd";
 
-import { DRAWER_WIDTH } from "../amap";
-import type { Spot } from "../domain";
+import { SPOT_DRAWER_WIDTH } from "../constants";
+import type { Spot } from "../data";
 import { SpotDetailPanel } from "./SpotDetailPanel";
 
 const { Text } = Typography;
@@ -23,7 +23,7 @@ export function SpotDrawer({
       open={!!spot}
       onClose={onClose}
       placement="right"
-      width={DRAWER_WIDTH}
+      width={SPOT_DRAWER_WIDTH}
       getContainer={false}
       rootStyle={{ position: "absolute", inset: 0, pointerEvents: "none" }}
       styles={{

@@ -2,22 +2,25 @@
  * 地图 React 封装：CircleMarker 标记 + token 配色，WorldMapController 管理生命周期。
  */
 import { theme } from "antd";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 
 import { WorldMapController } from "../amap";
-import type { Spot } from "../domain";
+import type { Spot } from "../data";
 
-export function WorldMap({
-  spots,
-  activeSpot,
-  overviewTick,
-  onSelectSpot,
-}: {
+export type WorldMapHandle = {
+  showOverview: () => void;
+};
+
+type WorldMapProps = {
   spots: Spot[];
   activeSpot?: Spot;
-  overviewTick: number;
   onSelectSpot: (id: string) => void;
-}) {
+};
+
+export const WorldMap = forwardRef<WorldMapHandle, WorldMapProps>(function WorldMap(
+  { spots, activeSpot, onSelectSpot },
+  ref,
+) {
   const { token } = theme.useToken();
   const containerRef = useRef<HTMLDivElement>(null);
   const controllerRef = useRef<WorldMapController | null>(null);
@@ -30,6 +33,14 @@ export function WorldMap({
       strokeColor: token.colorBgContainer,
     }),
     [token.colorPrimary, token.colorPrimaryActive, token.colorBgContainer],
+  );
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      showOverview: () => controllerRef.current?.showOverview(),
+    }),
+    [],
   );
 
   useEffect(() => {
@@ -66,10 +77,5 @@ export function WorldMap({
     controllerRef.current?.focusSpot(activeSpot);
   }, [ready, activeSpot]);
 
-  useEffect(() => {
-    if (!ready || overviewTick === 0) return;
-    controllerRef.current?.showOverview();
-  }, [ready, overviewTick]);
-
   return <div ref={containerRef} style={{ position: "absolute", inset: 0 }} />;
-}
+});

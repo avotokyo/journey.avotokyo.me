@@ -1,18 +1,20 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-/** 封装 react-router 导航与地图全景复位 tick（不含数据解析） */
-export function useJourneySelection() {
+import type { Spot } from "./data";
+
+/** 封装 URL 选中态：解析 activeSpot、导航与无效 ID 重定向 */
+export function useJourneySelection(getById: (id: string) => Spot | undefined) {
   const { spotId } = useParams<{ spotId?: string }>();
   const navigate = useNavigate();
-  const [overviewTick, setOverviewTick] = useState(0);
+  const activeSpot = spotId ? getById(spotId) : undefined;
+
+  useEffect(() => {
+    if (spotId && !activeSpot) void navigate("/", { replace: true });
+  }, [spotId, activeSpot, navigate]);
 
   const selectSpot = useCallback((id: string) => void navigate(`/spot/${id}`), [navigate]);
   const closeSelection = useCallback(() => void navigate("/"), [navigate]);
-  const goHome = useCallback(() => {
-    if (spotId) void navigate("/");
-    setOverviewTick((t) => t + 1);
-  }, [spotId, navigate]);
 
-  return { spotId, overviewTick, selectSpot, closeSelection, goHome };
+  return { spotId, activeSpot, selectSpot, closeSelection };
 }

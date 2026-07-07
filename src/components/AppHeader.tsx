@@ -1,7 +1,7 @@
 import { CompassOutlined } from "@ant-design/icons";
 import { Flex, Layout, Typography, theme } from "antd";
 
-import type { JourneyStats } from "../domain";
+import type { JourneyStats } from "../data";
 import { JourneyOverviewStrip } from "./JourneyOverviewStrip";
 
 const { Text, Link } = Typography;

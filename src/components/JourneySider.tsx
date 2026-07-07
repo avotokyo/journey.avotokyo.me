@@ -2,19 +2,19 @@ import { CalendarOutlined, EnvironmentOutlined, GithubOutlined } from "@ant-desi
 import { Divider, Flex, Layout, Menu, Typography, theme } from "antd";
 import { useMemo } from "react";
 
-import type { DayGroup } from "../domain";
+import type { DayGroup, JourneyStats } from "../data";
 
 const { Text, Link } = Typography;
 
 export function JourneySider({
   spotId,
   dayGroups,
-  totalSpots,
+  stats,
   onSelectSpot,
 }: {
   spotId?: string;
   dayGroups: DayGroup[];
-  totalSpots: number;
+  stats: JourneyStats;
   onSelectSpot: (id: string) => void;
 }) {
   const { token } = theme.useToken();
@@ -80,7 +80,7 @@ export function JourneySider({
           }}
         >
           <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
-            {totalSpots} 处足迹
+            {stats.totalSpots} 处足迹
           </Text>
           <Link
             href="https://github.com/avotokyo/journey.avotokyo.me/"

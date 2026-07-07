@@ -1,32 +1,32 @@
 /**
  * 应用主界面（Container）。
  *
- * 组装 journeyRepository 数据与 useJourneySelection 路由状态，
- * 将 props 下发给各 Presenter 组件。
+ * 组装 journey 数据与 useJourneySelection 路由状态，将 props 下发给各 Presenter 组件。
  */
 import { App as AntApp, Alert, Layout, theme } from "antd";
-import { useEffect } from "react";
+import { useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { AppHeader } from "./components/AppHeader";
 import { JourneySider } from "./components/JourneySider";
 import { SpotDrawer } from "./components/SpotDrawer";
-import { WorldMap } from "./components/WorldMap";
-import { journeyRepository } from "./journeyRepository";
+import { WorldMap, type WorldMapHandle } from "./components/WorldMap";
+import { journey } from "./data";
 import { useJourneySelection } from "./useJourneySelection";
 
-const { spots, dayGroups, stats, getById } = journeyRepository;
+const { spots, dayGroups, stats } = journey;
 
 export default function App() {
   const { token } = theme.useToken();
   const { message } = AntApp.useApp();
   const navigate = useNavigate();
-  const { spotId, overviewTick, selectSpot, closeSelection, goHome } = useJourneySelection();
-  const activeSpot = spotId ? getById(spotId) : undefined;
+  const mapRef = useRef<WorldMapHandle>(null);
+  const { spotId, activeSpot, selectSpot, closeSelection } = useJourneySelection(journey.getById);
 
-  useEffect(() => {
-    if (spotId && !activeSpot) void navigate("/", { replace: true });
-  }, [spotId, activeSpot, navigate]);
+  const goHome = useCallback(() => {
+    if (spotId) void navigate("/");
+    mapRef.current?.showOverview();
+  }, [spotId, navigate]);
 
   const copyLink = async () => {
     if (!activeSpot) return;
@@ -44,7 +44,7 @@ export default function App() {
         <JourneySider
           spotId={spotId}
           dayGroups={dayGroups}
-          totalSpots={stats.totalSpots}
+          stats={stats}
           onSelectSpot={selectSpot}
         />
 
@@ -53,9 +53,9 @@ export default function App() {
             style={{ position: "relative", padding: 0, height: "100%", overflow: "hidden" }}
           >
             <WorldMap
+              ref={mapRef}
               spots={spots}
               activeSpot={activeSpot}
-              overviewTick={overviewTick}
               onSelectSpot={selectSpot}
             />
 

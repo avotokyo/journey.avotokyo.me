@@ -6,12 +6,10 @@
  */
 import { load } from "@amap/amap-jsapi-loader";
 
-import type { Spot } from "./domain";
+import { SPOT_DRAWER_WIDTH } from "./constants";
+import type { Spot } from "./data";
 
-/** 详情抽屉宽度，地图 setFitView 右侧边距与之对齐 */
-export const DRAWER_WIDTH = 380;
-
-const MAP_DRAWER_PADDING: [number, number, number, number] = [80, DRAWER_WIDTH, 80, 80];
+const MAP_DRAWER_PADDING: [number, number, number, number] = [80, SPOT_DRAWER_WIDTH, 80, 80];
 
 /** 高德 API 加载 Promise 缓存，全局只加载一次 */
 let amapPromise: Promise<typeof AMap> | null = null;

@@ -16,18 +16,13 @@
 ```tree
 src/
 ├── main.tsx                    # 入口：ConfigProvider + AntApp + HashRouter
-├── App.tsx                     # 容器：组装数据与状态，下发 props
-├── domain/                     # 领域类型与纯函数（排序/分组/统计）
-│   ├── spot.ts
-│   ├── journey.ts
-│   └── index.ts
+├── App.tsx                     # Container：组装数据与状态，下发 props
+├── constants.ts                # 布局常量（抽屉宽度等）
+├── useJourneySelection.ts      # URL 选中态 Hook（解析 activeSpot、导航、无效 ID 重定向）
+├── amap.ts                     # 高德地图 Adapter（CircleMarker、视图切换）
 ├── data/
-│   ├── spots.json              # 景点数据源（唯一数据入口）
-│   └── journeyRepository.ts    # Repository + Facade
-├── hooks/
-│   └── useJourneySelection.ts  # react-router 导航与 overviewTick；数据解析在 App
-├── map/
-│   └── amap.ts                 # 高德地图 Adapter（CircleMarker、视图切换）
+│   ├── spots.json              # 景点数据源
+│   └── index.ts                # 类型 + 派生逻辑 + journey Facade
 └── components/                 # Presenter 组件（纯 props 驱动）
     ├── AppHeader.tsx
     ├── JourneyOverviewStrip.tsx

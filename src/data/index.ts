@@ -1,4 +1,40 @@
-import type { DayGroup, JourneyStats, Spot } from "./spot";
+/**
+ * 旅程数据 Facade：类型、派生逻辑与 spots.json 唯一读取入口。
+ */
+import rawSpots from "./spots.json";
+
+/** 景点数据结构，对应 spots.json 中的一条记录 */
+export interface Spot {
+  id: string;
+  name: string;
+  city?: string;
+  address?: string;
+  location: [number, number];
+  date: string;
+  time?: string;
+  essay?: string;
+  photos?: string[];
+  weather?: string;
+  companions?: string;
+  cost?: number;
+  rating?: number;
+  tags?: string[];
+}
+
+/** 旅行整体概览统计，用于 Header 右侧的 4 项数值条 */
+export interface JourneyStats {
+  totalSpots: number;
+  totalDays: number;
+  totalCities: number;
+  totalCost: number;
+}
+
+/** 侧栏按日分组的一条行程，日内景点已按时间升序 */
+export interface DayGroup {
+  date: string;
+  cities: string;
+  spots: Spot[];
+}
 
 function compareSpotDesc(a: Spot, b: Spot): number {
   const dateCmp = b.date.localeCompare(a.date);
@@ -10,15 +46,7 @@ function compareSpotTimeAsc(a: Spot, b: Spot): number {
   return (a.time ?? "").localeCompare(b.time ?? "");
 }
 
-export interface JourneyData {
-  spots: Spot[];
-  spotById: Map<string, Spot>;
-  dayGroups: DayGroup[];
-  journeyStats: JourneyStats;
-}
-
-/** 从原始景点列表派生排序、分组与统计（纯函数，无副作用） */
-export function buildJourneyData(raw: Spot[]): JourneyData {
+function buildJourneyData(raw: Spot[]) {
   const spots = [...raw].sort(compareSpotDesc);
   const spotById = new Map(spots.map((s) => [s.id, s]));
 
@@ -42,17 +70,26 @@ export function buildJourneyData(raw: Spot[]): JourneyData {
 
   const dates = new Set(spots.map((s) => s.date));
   const cities = new Set(spots.map((s) => s.city).filter((c): c is string => Boolean(c)));
-  const journeyStats: JourneyStats = {
+  const stats: JourneyStats = {
     totalSpots: spots.length,
     totalDays: dates.size,
     totalCities: cities.size,
     totalCost: spots.reduce((sum, s) => sum + (s.cost ?? 0), 0),
   };
 
-  return { spots, spotById, dayGroups, journeyStats };
+  return { spots, spotById, dayGroups, stats };
 }
 
 /** 格式化景点的日期时间显示，无 time 时仅返回 date */
 export function formatSpotDateTime(spot: Spot): string {
   return spot.time ? `${spot.date} ${spot.time}` : spot.date;
 }
+
+const { spots, spotById, dayGroups, stats } = buildJourneyData(rawSpots as Spot[]);
+
+export const journey = {
+  spots,
+  dayGroups,
+  stats,
+  getById: (id: string) => spotById.get(id),
+} as const;
