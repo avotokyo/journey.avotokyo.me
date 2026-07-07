@@ -1,9 +1,12 @@
 /**
  * 旅程数据 Facade：类型、派生逻辑与 spots.json 唯一读取入口。
+ *
+ * buildJourneyData 为模块内私有实现；对外通过 journey 对象暴露
+ * spots / dayGroups / stats / getById。
  */
 import rawSpots from "./spots.json";
 
-/** 景点数据结构，对应 spots.json 中的一条记录 */
+/** 景点数据结构，对应 spots.json 中的一条记录（id/name/location/date 必填，其余可选） */
 export interface Spot {
   id: string;
   name: string;
@@ -85,8 +88,10 @@ export function formatSpotDateTime(spot: Spot): string {
   return spot.time ? `${spot.date} ${spot.time}` : spot.date;
 }
 
+/** 模块加载时一次性派生，构建期数据为静态 */
 const { spots, spotById, dayGroups, stats } = buildJourneyData(rawSpots as Spot[]);
 
+/** 旅程数据对外入口 */
 export const journey = {
   spots,
   dayGroups,

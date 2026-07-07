@@ -2,6 +2,7 @@
  * 应用主界面（Container）。
  *
  * 组装 journey 数据与 useJourneySelection 路由状态，将 props 下发给各 Presenter 组件。
+ * 通过 mapRef 调用 WorldMap.showOverview()，在点击标题回首页时复位地图全景。
  */
 import { App as AntApp, Alert, Layout, theme } from "antd";
 import { useCallback, useRef } from "react";

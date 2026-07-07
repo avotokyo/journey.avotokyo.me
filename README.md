@@ -35,6 +35,20 @@ src/
 
 选中状态由 react-router-dom `HashRouter` 驱动（`#/spot/:id`），适配 GitHub Pages 部署。
 
+## 架构
+
+采用扁平分层，各层职责单一、文件数尽量少：
+
+| 模式             | 位置                       | 职责                                                      |
+| ---------------- | -------------------------- | --------------------------------------------------------- |
+| **Data Facade**  | `data/index.ts`            | 读取 `spots.json`，派生排序/分组/统计，对外暴露 `journey` |
+| **Container**    | `App.tsx`                  | 组装数据与路由状态，组合 `goHome`（导航 + 地图复位）      |
+| **URL-as-State** | `useJourneySelection.ts`   | 从 URL 解析 `activeSpot`，处理导航与无效 ID 重定向        |
+| **Adapter**      | `amap.ts` + `WorldMap.tsx` | 封装高德 SDK；`forwardRef` 暴露 `showOverview()` 命令接口 |
+| **Presenter**    | `components/*`             | 纯 props 驱动，不直接读取数据或操作路由                   |
+
+数据流：用户点击侧栏/地图 → `selectSpot` 更新 URL → Hook 解析 `activeSpot` → Container 将 props 下发给地图与抽屉。
+
 ## 数据字段
 
 `src/data/spots.json` 中每条景点支持以下字段（`id`/`name`/`location`/`date` 必填，其余可选，缺失时 UI 静默省略）：
@@ -72,6 +86,8 @@ vp run preview   # 预览构建产物
 ```
 
 新增标签类目时，请在 `src/components/tagColors.ts` 的 `TAG_COLOR_MAP` 中登记预设色映射，避免落回默认灰。
+
+新增景点时，编辑 `src/data/spots.json` 即可，`data/index.ts` 会在构建时自动派生排序、分组与统计。
 
 ## 部署
 

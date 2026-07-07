@@ -1,8 +1,8 @@
 /**
- * 高德地图封装模块。
+ * 高德地图 Adapter。
  *
- * 使用 AMap.CircleMarker 原生圆点标记景点，配色由 Ant Design token 注入。
- * 视图模式：中国全景概览 / 选中景点街道级聚焦（setFitView 预留抽屉边距）。
+ * 使用 AMap.CircleMarker 标注景点，配色由 Ant Design token 注入。
+ * 视图模式：中国全景概览 / 选中景点街道级聚焦（setFitView 右侧边距对齐 SPOT_DRAWER_WIDTH）。
  */
 import { load } from "@amap/amap-jsapi-loader";
 

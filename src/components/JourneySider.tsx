@@ -1,3 +1,6 @@
+/**
+ * 侧栏 Presenter：按日期分组的景点 Menu + 底部足迹统计与源码链接。
+ */
 import { CalendarOutlined, EnvironmentOutlined, GithubOutlined } from "@ant-design/icons";
 import { Divider, Flex, Layout, Menu, Typography, theme } from "antd";
 import { useMemo } from "react";

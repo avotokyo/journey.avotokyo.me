@@ -1,5 +1,8 @@
 /**
- * 地图 React 封装：CircleMarker 标记 + token 配色，WorldMapController 管理生命周期。
+ * 地图 React 封装（Adapter 桥接层）。
+ *
+ * CircleMarker 标记 + token 配色，WorldMapController 管理生命周期。
+ * 通过 forwardRef 暴露 showOverview()，供 Container 在回首页时命令式复位全景。
  */
 import { theme } from "antd";
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
@@ -7,6 +10,7 @@ import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState }
 import { WorldMapController } from "../amap";
 import type { Spot } from "../data";
 
+/** 通过 ref 暴露给 Container 的地图命令接口 */
 export type WorldMapHandle = {
   showOverview: () => void;
 };

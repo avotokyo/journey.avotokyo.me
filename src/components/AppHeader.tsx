@@ -1,3 +1,8 @@
+/**
+ * 顶栏 Presenter：品牌标题 + 旅程概览统计条。
+ *
+ * 点击标题触发 onGoHome（由 Container 组合导航与地图复位）。
+ */
 import { CompassOutlined } from "@ant-design/icons";
 import { Flex, Layout, Typography, theme } from "antd";
 

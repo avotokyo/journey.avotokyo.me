@@ -3,7 +3,12 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import type { Spot } from "./data";
 
-/** 封装 URL 选中态：解析 activeSpot、导航与无效 ID 重定向 */
+/**
+ * URL 选中态 Hook（URL-as-State）。
+ *
+ * 从路由参数解析 activeSpot，提供 selectSpot / closeSelection 导航方法，
+ * 并在 spotId 无效时重定向回首页。
+ */
 export function useJourneySelection(getById: (id: string) => Spot | undefined) {
   const { spotId } = useParams<{ spotId?: string }>();
   const navigate = useNavigate();

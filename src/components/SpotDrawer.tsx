@@ -1,3 +1,6 @@
+/**
+ * 详情抽屉 Presenter：无遮罩悬浮于地图之上，宽度由 SPOT_DRAWER_WIDTH 控制。
+ */
 import { EnvironmentOutlined, LinkOutlined } from "@ant-design/icons";
 import { Button, Drawer, Flex, Typography, theme } from "antd";
 
