@@ -77,7 +77,7 @@ export function JourneySider({ spotId, totalSpots }: { spotId?: string; totalSpo
             {totalSpots} 处足迹
           </Text>
           <Link
-            href="https://github.com/"
+            href="https://github.com/avotokyo/journey.avotokyo.me/"
             target="_blank"
             rel="noreferrer"
             style={{ color: token.colorTextTertiary }}
