@@ -2,11 +2,21 @@ import { CalendarOutlined, EnvironmentOutlined, GithubOutlined } from "@ant-desi
 import { Divider, Flex, Layout, Menu, Typography, theme } from "antd";
 import { useMemo } from "react";
 
-import { dayGroups, journeyStats, openSpot } from "../data/spots";
+import type { DayGroup } from "../domain";
 
 const { Text, Link } = Typography;
 
-export function JourneySider({ spotId }: { spotId?: string }) {
+export function JourneySider({
+  spotId,
+  dayGroups,
+  totalSpots,
+  onSelectSpot,
+}: {
+  spotId?: string;
+  dayGroups: DayGroup[];
+  totalSpots: number;
+  onSelectSpot: (id: string) => void;
+}) {
   const { token } = theme.useToken();
 
   const menuItems = useMemo(
@@ -37,7 +47,7 @@ export function JourneySider({ spotId }: { spotId?: string }) {
           ),
         })),
       })),
-    [token.colorTextTertiary, token.fontSizeSM],
+    [dayGroups, token.colorTextTertiary, token.fontSizeSM],
   );
 
   return (
@@ -57,7 +67,7 @@ export function JourneySider({ spotId }: { spotId?: string }) {
             style={{ borderInlineEnd: "none" }}
             selectedKeys={spotId ? [spotId] : []}
             items={menuItems}
-            onClick={({ key }) => openSpot(String(key))}
+            onClick={({ key }) => onSelectSpot(String(key))}
           />
         </div>
         <Divider style={{ margin: 0 }} />
@@ -70,7 +80,7 @@ export function JourneySider({ spotId }: { spotId?: string }) {
           }}
         >
           <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
-            {journeyStats.totalSpots} 处足迹
+            {totalSpots} 处足迹
           </Text>
           <Link
             href="https://github.com/avotokyo/journey.avotokyo.me/"

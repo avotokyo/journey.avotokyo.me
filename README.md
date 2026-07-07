@@ -16,19 +16,27 @@
 ```tree
 src/
 ├── main.tsx                    # 入口，ConfigProvider 中文 locale + AntApp 上下文
-├── App.tsx                     # 主布局与全局状态（Hash 选中、概览 tick、复制链接）
-├── amap.ts                     # 高德地图封装（CircleMarker、视图切换、标记高亮）
-├── components/
-│   ├── AppHeader.tsx           # 顶栏品牌与旅程概览条
-│   ├── JourneyOverviewStrip.tsx
-│   ├── JourneySider.tsx        # 侧栏按日分组 Menu + 足迹计数
-│   ├── SpotDrawer.tsx          # 无遮罩悬浮抽屉（复制链接）
-│   ├── SpotDetailPanel.tsx     # 抽屉详情主体
-│   ├── WorldMap.tsx            # 地图 React 封装
-│   └── tagColors.ts            # 标签 → Ant Design 预设色映射
-└── data/
-    ├── spots.json              # 景点数据
-    └── spots.ts                # 从 JSON 派生排序/分组/统计，Hash 路由
+├── App.tsx                     # 容器：组装数据与状态，下发 props
+├── domain/                     # 领域类型与纯函数（排序/分组/统计）
+│   ├── spot.ts
+│   └── journey.ts
+├── data/
+│   ├── spots.json              # 景点数据源（唯一数据入口）
+│   └── journeyRepository.ts    # Repository + Facade
+├── routing/
+│   └── hashSpotRouter.ts       # Hash 深链接导航
+├── hooks/
+│   └── useJourneySelection.ts  # 选中态与地图全景复位
+├── map/
+│   └── amap.ts                 # 高德地图 Adapter（CircleMarker、视图切换）
+└── components/                 # Presenter 组件（纯 props 驱动）
+    ├── AppHeader.tsx
+    ├── JourneyOverviewStrip.tsx
+    ├── JourneySider.tsx
+    ├── SpotDrawer.tsx
+    ├── SpotDetailPanel.tsx
+    ├── WorldMap.tsx
+    └── tagColors.ts
 ```
 
 选中状态由 URL Hash（`#/spot/:id`）驱动，无需路由库。

@@ -6,7 +6,7 @@
  */
 import { load } from "@amap/amap-jsapi-loader";
 
-import type { Spot } from "./data/spots";
+import type { Spot } from "../domain";
 
 /** 详情抽屉宽度，地图 setFitView 右侧边距与之对齐 */
 export const DRAWER_WIDTH = 380;

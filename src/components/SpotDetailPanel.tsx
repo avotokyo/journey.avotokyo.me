@@ -21,7 +21,7 @@ import {
   theme,
 } from "antd";
 
-import { formatSpotDateTime, type Spot } from "../data/spots";
+import { formatSpotDateTime, type Spot } from "../domain";
 import { tagColor } from "./tagColors";
 
 const { Text, Paragraph } = Typography;

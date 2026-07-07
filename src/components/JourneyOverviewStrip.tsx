@@ -6,7 +6,7 @@
  */
 import { Divider, Flex, Space, Typography, theme } from "antd";
 
-import type { JourneyStats } from "../data/spots";
+import type { JourneyStats } from "../domain";
 
 const { Text } = Typography;
 

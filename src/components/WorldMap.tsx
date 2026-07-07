@@ -4,14 +4,16 @@
 import { theme } from "antd";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { WorldMapController } from "../amap";
-import { spots, type Spot } from "../data/spots";
+import type { Spot } from "../domain";
+import { WorldMapController } from "../map";
 
 export function WorldMap({
+  spots,
   activeSpot,
   overviewTick,
   onSpotClick,
 }: {
+  spots: Spot[];
   activeSpot?: Spot;
   overviewTick: number;
   onSpotClick: (spot: Spot) => void;
@@ -48,7 +50,7 @@ export function WorldMap({
       controllerRef.current = null;
       setReady(false);
     };
-  }, [onSpotClick]);
+  }, [onSpotClick, spots]);
 
   useEffect(() => {
     if (!ready) return;

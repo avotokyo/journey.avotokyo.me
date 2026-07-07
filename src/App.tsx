@@ -1,46 +1,26 @@
 /**
- * 应用主界面。
+ * 应用主界面（Container）。
  *
- * 布局遵循 Ant Design v6 三层表面模型：
- *   - `Layout.Header`：品牌 + 右侧旅程概览统计条（bg-container + 底边框）
- *   - `Layout.Sider`：按日期分组的景点导航 + 底部足迹计数（bg-container + 右边框）
- *   - `Layout.Content`：地图 + 悬浮详情抽屉（bg-layout；抽屉为 elevated，带阴影）
- *
- * 视觉纪律（对齐 Ant Design v6 规范）：
- *   - 主功能色仅出现在唯一 primary 按钮（复制链接）与地图标记高亮
- *   - 分类可视化用预设色（geekblue/gold/purple…），见 `components/tagColors.ts`
- *   - 只使用 400/600 两种字重；间距全部走 `token.margin*` / `token.padding*`
- *   - 层级由边框、Divider 和淡色底 (`colorFillQuaternary`) 承担，避免多余阴影
- *
- * 状态：
- *   - 选中景点由 URL Hash（`#/spot/:id`）驱动，`useSyncExternalStore` 订阅
- *   - `overviewTick` 在 Hash 未变时触发地图回到全景（如点击品牌名）
+ * 组装 journeyRepository 数据与 useJourneySelection 状态，
+ * 将 props 下发给各 Presenter 组件。
  */
 import { App as AntApp, Alert, Layout, theme } from "antd";
-import { useCallback, useState, useSyncExternalStore } from "react";
+import { useCallback } from "react";
 
 import { AppHeader } from "./components/AppHeader";
 import { JourneySider } from "./components/JourneySider";
 import { SpotDrawer } from "./components/SpotDrawer";
 import { WorldMap } from "./components/WorldMap";
-import {
-  closeSpot,
-  getSpotById,
-  getSpotIdFromHash,
-  journeyStats,
-  openSpot,
-  subscribeSpotId,
-  type Spot,
-} from "./data/spots";
+import { journeyRepository } from "./data/journeyRepository";
+import type { Spot } from "./domain";
+import { useJourneySelection } from "./hooks/useJourneySelection";
 
 export default function App() {
   const { token } = theme.useToken();
   const { message } = AntApp.useApp();
 
-  const spotId = useSyncExternalStore(subscribeSpotId, getSpotIdFromHash);
-  const activeSpot = spotId ? getSpotById(spotId) : undefined;
-
-  const [overviewTick, setOverviewTick] = useState(0);
+  const { spotId, activeSpot, overviewTick, selectSpot, closeSelection, goHome } =
+    useJourneySelection();
 
   const copyLink = async () => {
     if (!activeSpot) return;
@@ -49,25 +29,26 @@ export default function App() {
     message.success("链接已复制");
   };
 
-  const handleSpotClick = useCallback((spot: Spot) => openSpot(spot.id), []);
-
-  const goHome = () => {
-    if (spotId) closeSpot();
-    setOverviewTick((t) => t + 1);
-  };
+  const handleSpotClick = useCallback((spot: Spot) => selectSpot(spot.id), [selectSpot]);
 
   return (
     <Layout style={{ height: "100vh", overflow: "hidden", background: token.colorBgLayout }}>
-      <AppHeader stats={journeyStats} onGoHome={goHome} />
+      <AppHeader stats={journeyRepository.stats} onGoHome={goHome} />
 
       <Layout>
-        <JourneySider spotId={spotId} />
+        <JourneySider
+          spotId={spotId}
+          dayGroups={journeyRepository.dayGroups}
+          totalSpots={journeyRepository.stats.totalSpots}
+          onSelectSpot={selectSpot}
+        />
 
         <Layout style={{ flex: 1, minHeight: 0, background: token.colorBgLayout }}>
           <Layout.Content
             style={{ position: "relative", padding: 0, height: "100%", overflow: "hidden" }}
           >
             <WorldMap
+              spots={journeyRepository.spots}
               activeSpot={activeSpot}
               overviewTick={overviewTick}
               onSpotClick={handleSpotClick}
@@ -90,7 +71,11 @@ export default function App() {
               />
             )}
 
-            <SpotDrawer spot={activeSpot} onClose={closeSpot} onCopyLink={() => void copyLink()} />
+            <SpotDrawer
+              spot={activeSpot}
+              onClose={closeSelection}
+              onCopyLink={() => void copyLink()}
+            />
           </Layout.Content>
         </Layout>
       </Layout>
