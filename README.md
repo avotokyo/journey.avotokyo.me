@@ -28,7 +28,7 @@ src/
 │   └── tagColors.ts            # 标签 → Ant Design 预设色映射
 └── data/
     ├── spots.json              # 景点数据
-    └── spots.ts                # 类型、排序、分组、Hash 路由、旅程统计
+    └── spots.ts                # 从 JSON 派生排序/分组/统计，Hash 路由
 ```
 
 选中状态由 URL Hash（`#/spot/:id`）驱动，无需路由库。

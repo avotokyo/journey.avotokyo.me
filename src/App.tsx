@@ -17,7 +17,7 @@
  *   - `overviewTick` 在 Hash 未变时触发地图回到全景（如点击品牌名）
  */
 import { App as AntApp, Alert, Layout, theme } from "antd";
-import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useState, useSyncExternalStore } from "react";
 
 import { AppHeader } from "./components/AppHeader";
 import { JourneySider } from "./components/JourneySider";
@@ -25,11 +25,10 @@ import { SpotDrawer } from "./components/SpotDrawer";
 import { WorldMap } from "./components/WorldMap";
 import {
   closeSpot,
-  computeJourneyStats,
   getSpotById,
   getSpotIdFromHash,
+  journeyStats,
   openSpot,
-  spots,
   subscribeSpotId,
   type Spot,
 } from "./data/spots";
@@ -42,8 +41,6 @@ export default function App() {
   const activeSpot = spotId ? getSpotById(spotId) : undefined;
 
   const [overviewTick, setOverviewTick] = useState(0);
-
-  const stats = useMemo(() => computeJourneyStats(spots), []);
 
   const copyLink = async () => {
     if (!activeSpot) return;
@@ -61,10 +58,10 @@ export default function App() {
 
   return (
     <Layout style={{ height: "100vh", overflow: "hidden", background: token.colorBgLayout }}>
-      <AppHeader stats={stats} onGoHome={goHome} />
+      <AppHeader stats={journeyStats} onGoHome={goHome} />
 
       <Layout>
-        <JourneySider spotId={spotId} totalSpots={stats.totalSpots} />
+        <JourneySider spotId={spotId} />
 
         <Layout style={{ flex: 1, minHeight: 0, background: token.colorBgLayout }}>
           <Layout.Content

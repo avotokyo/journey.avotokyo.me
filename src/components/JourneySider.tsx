@@ -2,20 +2,16 @@ import { CalendarOutlined, EnvironmentOutlined, GithubOutlined } from "@ant-desi
 import { Divider, Flex, Layout, Menu, Typography, theme } from "antd";
 import { useMemo } from "react";
 
-import { groupSpotsByDate, openSpot, spots } from "../data/spots";
+import { dayGroups, journeyStats, openSpot } from "../data/spots";
 
 const { Text, Link } = Typography;
 
-export function JourneySider({ spotId, totalSpots }: { spotId?: string; totalSpots: number }) {
+export function JourneySider({ spotId }: { spotId?: string }) {
   const { token } = theme.useToken();
 
-  const menuItems = useMemo(() => {
-    const groups = groupSpotsByDate(spots);
-    const sortedDates = [...groups.keys()].sort((a, b) => b.localeCompare(a));
-    return sortedDates.map((date) => {
-      const group = groups.get(date)!;
-      const cities = [...new Set(group.map((s) => s.city).filter(Boolean))].join(" · ");
-      return {
+  const menuItems = useMemo(
+    () =>
+      dayGroups.map(({ date, cities, spots: group }) => ({
         type: "group" as const,
         label: (
           <Flex align="center" gap={6}>
@@ -40,9 +36,9 @@ export function JourneySider({ spotId, totalSpots }: { spotId?: string; totalSpo
             </Text>
           ),
         })),
-      };
-    });
-  }, [token.colorTextTertiary, token.fontSizeSM]);
+      })),
+    [token.colorTextTertiary, token.fontSizeSM],
+  );
 
   return (
     <Layout.Sider
@@ -74,7 +70,7 @@ export function JourneySider({ spotId, totalSpots }: { spotId?: string; totalSpo
           }}
         >
           <Text type="secondary" style={{ fontSize: token.fontSizeSM }}>
-            {totalSpots} 处足迹
+            {journeyStats.totalSpots} 处足迹
           </Text>
           <Link
             href="https://github.com/avotokyo/journey.avotokyo.me/"

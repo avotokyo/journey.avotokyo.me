@@ -1,18 +1,12 @@
 import { CompassOutlined } from "@ant-design/icons";
 import { Flex, Layout, Typography, theme } from "antd";
 
-import type { computeJourneyStats } from "../data/spots";
+import type { JourneyStats } from "../data/spots";
 import { JourneyOverviewStrip } from "./JourneyOverviewStrip";
 
 const { Text, Link } = Typography;
 
-export function AppHeader({
-  stats,
-  onGoHome,
-}: {
-  stats: ReturnType<typeof computeJourneyStats>;
-  onGoHome: () => void;
-}) {
+export function AppHeader({ stats, onGoHome }: { stats: JourneyStats; onGoHome: () => void }) {
   const { token } = theme.useToken();
 
   return (

@@ -6,11 +6,11 @@
  */
 import { Divider, Flex, Space, Typography, theme } from "antd";
 
-import type { computeJourneyStats } from "../data/spots";
+import type { JourneyStats } from "../data/spots";
 
 const { Text } = Typography;
 
-export function JourneyOverviewStrip({ stats }: { stats: ReturnType<typeof computeJourneyStats> }) {
+export function JourneyOverviewStrip({ stats }: { stats: JourneyStats }) {
   const { token } = theme.useToken();
   const valueStyle: React.CSSProperties = {
     fontSize: token.fontSize,

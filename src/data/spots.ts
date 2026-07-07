@@ -1,10 +1,10 @@
 /**
- * 景点数据层：类型定义、排序、分组、汇总统计与 Hash 路由。
+ * 景点数据层：从 `spots.json` 一次性派生排序、分组、统计与 Hash 路由。
  *
- * - `spots`：全局景点列表，按日期+时间倒序（最新在前），供侧栏/地图消费。
- * - `groupSpotsByDate`：按日期聚合，日内按时间升序，形成一日行程时间线。
- * - `computeJourneyStats`：汇总景点数、天数、城市数、总花费，供 Header 概览。
- * - Hash 路由：选中景点通过 URL Hash（`#/spot/:id`）同步，便于分享深链接。
+ * - `spots`：按日期+时间倒序（最新在前），供地图消费
+ * - `dayGroups`：按日期倒序分组，日内按时间升序，供侧栏 Menu
+ * - `journeyStats`：景点数、天数、城市数、总花费，供 Header 概览
+ * - Hash 路由：选中景点通过 URL Hash（`#/spot/:id`）同步，便于分享深链接
  */
 import rawSpots from "./spots.json";
 
@@ -50,41 +50,89 @@ export interface Spot {
   tags?: string[];
 }
 
-/**
- * 全量景点列表，按日期、时间倒序排列（最新的在前）。
- * 从 JSON 导入后做一次排序，保证侧栏与地图数据顺序一致。
- */
-export const spots = [...(rawSpots as Spot[])].sort((a, b) => {
+/** 旅行整体概览统计，用于 Header 右侧的 4 项数值条 */
+export interface JourneyStats {
+  /** 到访景点总数 */
+  totalSpots: number;
+  /** 涉及的不同日期数（近似"旅行天数"） */
+  totalDays: number;
+  /** 涉及的不同城市数（缺失 city 字段的景点不计） */
+  totalCities: number;
+  /** 所有景点 cost 合计（人民币元），未录入视为 0 */
+  totalCost: number;
+}
+
+/** 侧栏按日分组的一条行程，日内景点已按时间升序 */
+export interface DayGroup {
+  date: string;
+  /** 当日涉及城市，以 ` · ` 拼接 */
+  cities: string;
+  spots: Spot[];
+}
+
+function compareSpotDesc(a: Spot, b: Spot): number {
   const dateCmp = b.date.localeCompare(a.date);
   if (dateCmp !== 0) return dateCmp;
   return (b.time ?? "").localeCompare(a.time ?? "");
-});
+}
+
+function compareSpotTimeAsc(a: Spot, b: Spot): number {
+  return (a.time ?? "").localeCompare(b.time ?? "");
+}
+
+function buildJourneyData(raw: Spot[]) {
+  const spots = [...raw].sort(compareSpotDesc);
+  const spotById = new Map(spots.map((s) => [s.id, s]));
+
+  const byDate = new Map<string, Spot[]>();
+  for (const spot of spots) {
+    const group = byDate.get(spot.date) ?? [];
+    group.push(spot);
+    byDate.set(spot.date, group);
+  }
+  for (const group of byDate.values()) {
+    group.sort(compareSpotTimeAsc);
+  }
+
+  const dayGroups: DayGroup[] = [...byDate.keys()]
+    .sort((a, b) => b.localeCompare(a))
+    .map((date) => {
+      const group = byDate.get(date)!;
+      const cities = [...new Set(group.map((s) => s.city).filter(Boolean))].join(" · ");
+      return { date, cities, spots: group };
+    });
+
+  const dates = new Set(spots.map((s) => s.date));
+  const cities = new Set(spots.map((s) => s.city).filter((c): c is string => Boolean(c)));
+  const journeyStats: JourneyStats = {
+    totalSpots: spots.length,
+    totalDays: dates.size,
+    totalCities: cities.size,
+    totalCost: spots.reduce((sum, s) => sum + (s.cost ?? 0), 0),
+  };
+
+  return { spots, spotById, dayGroups, journeyStats };
+}
+
+const journey = buildJourneyData(rawSpots as Spot[]);
+
+/** 全量景点列表（日期+时间倒序） */
+export const spots = journey.spots;
+
+/** 侧栏 Menu 用的按日分组数据（日期倒序，日内时间升序） */
+export const dayGroups = journey.dayGroups;
+
+/** Header 旅程概览统计 */
+export const journeyStats = journey.journeyStats;
 
 /** 根据 id 查找景点，未找到时返回 undefined */
 export function getSpotById(id: string): Spot | undefined {
-  return spots.find((s) => s.id === id);
+  return journey.spotById.get(id);
 }
 
 /** 格式化景点的日期时间显示，无 time 时仅返回 date */
 export function formatSpotDateTime(spot: Spot): string {
   return spot.time ? `${spot.date} ${spot.time}` : spot.date;
-}
-
-/**
- * 按日期分组景点。
- * 同一天内按 time 升序排列（上午在前），便于按时间线浏览当日行程。
- */
-export function groupSpotsByDate(list: Spot[]): Map<string, Spot[]> {
-  const groups = new Map<string, Spot[]>();
-  for (const spot of list) {
-    const group = groups.get(spot.date) ?? [];
-    group.push(spot);
-    groups.set(spot.date, group);
-  }
-  for (const [, group] of groups) {
-    group.sort((a, b) => (a.time ?? "").localeCompare(b.time ?? ""));
-  }
-  return groups;
 }
 
 /** 从当前 URL Hash 解析景点 id，格式为 #/spot/:id */
@@ -111,35 +159,4 @@ export function openSpot(id: string): void {
 /** 关闭景点详情：清空 Hash 回到概览视图 */
 export function closeSpot(): void {
   location.hash = "#/";
-}
-
-/** 旅行整体概览统计，用于 Header 右侧的 4 项数值条 */
-export interface JourneyStats {
-  /** 到访景点总数 */
-  totalSpots: number;
-  /** 涉及的不同日期数（近似"旅行天数"） */
-  totalDays: number;
-  /** 涉及的不同城市数（缺失 city 字段的景点不计） */
-  totalCities: number;
-  /** 所有景点 cost 合计（人民币元），未录入视为 0 */
-  totalCost: number;
-}
-
-/**
- * 汇总景点数据得到旅行概览。
- *
- * `totalCities` 只统计有 `city` 字段的景点；`totalCost` 累加全部景点的
- * `cost`（缺失时按 0 计）。返回值可直接给
- * Header 的 `JourneyOverviewStrip` 消费。
- */
-export function computeJourneyStats(list: Spot[]): JourneyStats {
-  const dates = new Set(list.map((s) => s.date));
-  const cities = new Set(list.map((s) => s.city).filter((c): c is string => Boolean(c)));
-  const totalCost = list.reduce((sum, s) => sum + (s.cost ?? 0), 0);
-  return {
-    totalSpots: list.length,
-    totalDays: dates.size,
-    totalCities: cities.size,
-    totalCost,
-  };
 }
