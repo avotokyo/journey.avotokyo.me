@@ -14,6 +14,7 @@ import { WorldMap } from "./components/WorldMap";
 import { journeyRepository } from "./data/journeyRepository";
 import type { Spot } from "./domain";
 import { useJourneySelection } from "./hooks/useJourneySelection";
+import { spotShareUrl } from "./routing/paths";
 
 export default function App() {
   const { token } = theme.useToken();
@@ -24,7 +25,7 @@ export default function App() {
 
   const copyLink = async () => {
     if (!activeSpot) return;
-    const url = `${location.origin}${location.pathname}#/spot/${activeSpot.id}`;
+    const url = spotShareUrl(activeSpot.id);
     await navigator.clipboard.writeText(url);
     message.success("链接已复制");
   };

@@ -1,20 +1,22 @@
-import { useCallback, useState, useSyncExternalStore } from "react";
+import { useCallback, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { journeyRepository } from "../data/journeyRepository";
-import { closeSpot, getSpotIdFromHash, openSpot, subscribeSpotId } from "../routing/hashSpotRouter";
+import { spotPath } from "../routing/paths";
 
-/** 封装 Hash 驱动的景点选中态与地图全景复位 */
+/** 封装路由驱动的景点选中态与地图全景复位 */
 export function useJourneySelection() {
-  const spotId = useSyncExternalStore(subscribeSpotId, getSpotIdFromHash);
+  const { spotId } = useParams<{ spotId?: string }>();
+  const navigate = useNavigate();
   const activeSpot = spotId ? journeyRepository.getById(spotId) : undefined;
   const [overviewTick, setOverviewTick] = useState(0);
 
-  const selectSpot = useCallback((id: string) => openSpot(id), []);
-  const closeSelection = useCallback(() => closeSpot(), []);
+  const selectSpot = useCallback((id: string) => void navigate(spotPath(id)), [navigate]);
+  const closeSelection = useCallback(() => void navigate("/"), [navigate]);
   const goHome = useCallback(() => {
-    if (spotId) closeSpot();
+    if (spotId) void navigate("/");
     setOverviewTick((t) => t + 1);
-  }, [spotId]);
+  }, [spotId, navigate]);
 
   return {
     spotId,

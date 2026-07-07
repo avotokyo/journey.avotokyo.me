@@ -8,7 +8,7 @@
 - **按日分组导航**：侧栏 Menu 按日期倒序分组，日内按时间升序，每组标注当日城市
 - **地图标记**：高德 `CircleMarker` 标注景点，支持中国全景 ↔ 街道级聚焦切换
 - **详情抽屉**：评分（`Rate`）、分类标签、天气/同行/花费元信息卡、随笔、4:3 照片网格
-- **深链接分享**：URL Hash（`#/spot/:id`）驱动选中态，可复制单个景点的可分享链接
+- **深链接分享**：react-router-dom `HashRouter`（`#/spot/:id`）驱动选中态，可复制单个景点的可分享链接
 - **无遮罩抽屉**：详情抽屉悬浮于地图之上，地图仍可交互
 
 ## 项目结构
@@ -24,7 +24,8 @@ src/
 │   ├── spots.json              # 景点数据源（唯一数据入口）
 │   └── journeyRepository.ts    # Repository + Facade
 ├── routing/
-│   └── hashSpotRouter.ts       # Hash 深链接导航
+│   ├── router.tsx              # HashRouter + Routes 定义
+│   └── paths.ts                # 路由路径与分享链接
 ├── hooks/
 │   └── useJourneySelection.ts  # 选中态与地图全景复位
 ├── map/
@@ -39,7 +40,7 @@ src/
     └── tagColors.ts
 ```
 
-选中状态由 URL Hash（`#/spot/:id`）驱动，无需路由库。
+选中状态由 react-router-dom `HashRouter` 驱动（`#/spot/:id`），适配 GitHub Pages 部署。
 
 ## 数据字段
 

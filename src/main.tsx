@@ -9,13 +9,13 @@ import zhCN from "antd/locale/zh_CN";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
-import App from "./App.tsx";
+import { AppRouter } from "./routing/router.tsx";
 
 createRoot(document.getElementById("app")!).render(
   <StrictMode>
     <ConfigProvider locale={zhCN}>
       <AntApp>
-        <App />
+        <AppRouter />
       </AntApp>
     </ConfigProvider>
   </StrictMode>,
