@@ -4,8 +4,8 @@
 import { theme } from "antd";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { WorldMapController } from "../amap";
 import type { Spot } from "../domain";
-import { WorldMapController } from "../map/amap";
 
 export function WorldMap({
   spots,

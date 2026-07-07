@@ -13,7 +13,7 @@ import { JourneySider } from "./components/JourneySider";
 import { SpotDrawer } from "./components/SpotDrawer";
 import { WorldMap } from "./components/WorldMap";
 import { journeyRepository } from "./data/journeyRepository";
-import { useJourneySelection } from "./hooks/useJourneySelection";
+import { useJourneySelection } from "./useJourneySelection";
 
 const { spots, dayGroups, stats, getById } = journeyRepository;
 
