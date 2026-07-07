@@ -1,5 +1,5 @@
 /**
- * Header 右侧的旅行概览条：横向 Statistic 组。
+ * Header 右侧的旅行概览条：横向数值组。
  *
  * 遵循 v6 排版：数值用 title-lg（16px 600），标签用 body-sm 次级文本。
  * 分隔线用 Divider type="vertical" 保持 4px 网格节律。

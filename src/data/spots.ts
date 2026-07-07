@@ -30,7 +30,7 @@ export interface Spot {
   date: string;
   /** 到访时间，格式 HH:mm，可选 */
   time?: string;
-  /** 旅行随笔，Markdown 纯文本，可选 */
+  /** 旅行随笔，纯文本，可选 */
   essay?: string;
   /** 照片 URL 列表，可选；抽屉内以 4:3 网格展示并支持大图预览 */
   photos?: string[];
@@ -44,7 +44,7 @@ export interface Spot {
   rating?: number;
   /**
    * 标签集合，如 `["历史", "美食"]`。
-   * App 侧维护 `TAG_COLOR_MAP` 将标签映射到 Ant Design 预设色，
+   * `components/tagColors.ts` 中的 `TAG_COLOR_MAP` 将标签映射到 Ant Design 预设色，
    * 遵循 v6 规范：预设色只用于分类可视化，不作为主功能色。
    */
   tags?: string[];
@@ -121,15 +121,15 @@ export interface JourneyStats {
   totalDays: number;
   /** 涉及的不同城市数（缺失 city 字段的景点不计） */
   totalCities: number;
-  /** 已录入 cost 字段的景点花费合计（人民币元） */
+  /** 所有景点 cost 合计（人民币元），未录入视为 0 */
   totalCost: number;
 }
 
 /**
  * 汇总景点数据得到旅行概览。
  *
- * `totalCities` 只统计有 `city` 字段的景点，`totalCost` 只累加显式录入
- * 的 `cost`，避免因数据缺失导致虚低或引入 NaN。返回值可直接给
+ * `totalCities` 只统计有 `city` 字段的景点；`totalCost` 累加全部景点的
+ * `cost`（缺失时按 0 计）。返回值可直接给
  * Header 的 `JourneyOverviewStrip` 消费。
  */
 export function computeJourneyStats(list: Spot[]): JourneyStats {

@@ -6,9 +6,9 @@
  *   - `Layout.Sider`：按日期分组的景点导航 + 底部足迹计数（bg-container + 右边框）
  *   - `Layout.Content`：地图 + 悬浮详情抽屉（bg-layout；抽屉为 elevated，带阴影）
  *
- * 视觉纪律（严格对齐 design.md）：
+ * 视觉纪律（对齐 Ant Design v6 规范）：
  *   - 主功能色仅出现在唯一 primary 按钮（复制链接）与地图标记高亮
- *   - 分类可视化用预设色（geekblue/gold/purple…），通过 `TAG_COLOR_MAP` 集中维护
+ *   - 分类可视化用预设色（geekblue/gold/purple…），见 `components/tagColors.ts`
  *   - 只使用 400/600 两种字重；间距全部走 `token.margin*` / `token.padding*`
  *   - 层级由边框、Divider 和淡色底 (`colorFillQuaternary`) 承担，避免多余阴影
  *

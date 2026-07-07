@@ -15,12 +15,20 @@
 
 ```tree
 src/
-├── main.tsx      # 入口，ConfigProvider 中文 locale + AntApp 上下文
-├── App.tsx       # Header（品牌+统计条）| Sider（Menu）| Content（地图+抽屉）
-├── amap.ts       # 高德地图封装（CircleMarker、视图切换、标记高亮）
+├── main.tsx                    # 入口，ConfigProvider 中文 locale + AntApp 上下文
+├── App.tsx                     # 主布局与全局状态（Hash 选中、概览 tick、复制链接）
+├── amap.ts                     # 高德地图封装（CircleMarker、视图切换、标记高亮）
+├── components/
+│   ├── AppHeader.tsx           # 顶栏品牌与旅程概览条
+│   ├── JourneyOverviewStrip.tsx
+│   ├── JourneySider.tsx        # 侧栏按日分组 Menu + 足迹计数
+│   ├── SpotDrawer.tsx          # 无遮罩悬浮抽屉（复制链接）
+│   ├── SpotDetailPanel.tsx     # 抽屉详情主体
+│   ├── WorldMap.tsx            # 地图 React 封装
+│   └── tagColors.ts            # 标签 → Ant Design 预设色映射
 └── data/
-    ├── spots.json  # 景点数据
-    └── spots.ts    # 类型、排序、分组、Hash 路由、旅程统计
+    ├── spots.json              # 景点数据
+    └── spots.ts                # 类型、排序、分组、Hash 路由、旅程统计
 ```
 
 选中状态由 URL Hash（`#/spot/:id`）驱动，无需路由库。
@@ -29,22 +37,22 @@ src/
 
 `src/data/spots.json` 中每条景点支持以下字段（`id`/`name`/`location`/`date` 必填，其余可选，缺失时 UI 静默省略）：
 
-| 字段         | 类型               | 说明                                               |
-| ------------ | ------------------ | -------------------------------------------------- |
-| `id`         | `string`           | 唯一标识，用于 Hash 路由与菜单 key                 |
-| `name`       | `string`           | 景点名称                                           |
-| `city`       | `string`           | 所属城市，用于统计与抽屉副标题                     |
-| `address`    | `string`           | 详细地址                                           |
-| `location`   | `[number, number]` | `[经度, 纬度]`                                     |
-| `date`       | `string`           | 到访日期 `YYYY-MM-DD`                              |
-| `time`       | `string`           | 到访时间 `HH:mm`                                   |
-| `essay`      | `string`           | 旅行随笔                                           |
-| `photos`     | `string[]`         | 照片 URL 列表                                      |
-| `weather`    | `string`           | 当日天气，如 `"晴 22℃"`                            |
-| `companions` | `string`           | 同行者，如 `"独自"`、`"与家人"`                    |
-| `cost`       | `number`           | 花费（元），计入总花费                             |
-| `rating`     | `number`           | 主观评分 0–5，支持 0.5 递增                        |
-| `tags`       | `string[]`         | 分类标签，映射到 Ant Design 预设色（见 `App.tsx`） |
+| 字段         | 类型               | 说明                                                    |
+| ------------ | ------------------ | ------------------------------------------------------- |
+| `id`         | `string`           | 唯一标识，用于 Hash 路由与菜单 key                      |
+| `name`       | `string`           | 景点名称                                                |
+| `city`       | `string`           | 所属城市，用于统计与抽屉副标题                          |
+| `address`    | `string`           | 详细地址                                                |
+| `location`   | `[number, number]` | `[经度, 纬度]`                                          |
+| `date`       | `string`           | 到访日期 `YYYY-MM-DD`                                   |
+| `time`       | `string`           | 到访时间 `HH:mm`                                        |
+| `essay`      | `string`           | 旅行随笔                                                |
+| `photos`     | `string[]`         | 照片 URL 列表                                           |
+| `weather`    | `string`           | 当日天气，如 `"晴 22℃"`                                 |
+| `companions` | `string`           | 同行者，如 `"独自"`、`"与家人"`                         |
+| `cost`       | `number`           | 花费（元），计入总花费                                  |
+| `rating`     | `number`           | 主观评分 0–5，支持 0.5 递增                             |
+| `tags`       | `string[]`         | 分类标签，映射到 Ant Design 预设色（见 `tagColors.ts`） |
 
 ## 本地开发
 
@@ -61,7 +69,7 @@ vp run build     # 类型检查 + 生产构建
 vp run preview   # 预览构建产物
 ```
 
-新增标签类目时，请在 `src/App.tsx` 的 `TAG_COLOR_MAP` 中登记预设色映射，避免落回默认灰。
+新增标签类目时，请在 `src/components/tagColors.ts` 的 `TAG_COLOR_MAP` 中登记预设色映射，避免落回默认灰。
 
 ## 部署
 
