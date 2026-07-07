@@ -1,10 +1,12 @@
 /**
  * 应用主界面（Container）。
  *
- * 组装 journeyRepository 数据与 useJourneySelection 状态，
+ * 组装 journeyRepository 数据与 useJourneySelection 路由状态，
  * 将 props 下发给各 Presenter 组件。
  */
 import { App as AntApp, Alert, Layout, theme } from "antd";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { AppHeader } from "./components/AppHeader";
 import { JourneySider } from "./components/JourneySider";
@@ -13,13 +15,18 @@ import { WorldMap } from "./components/WorldMap";
 import { journeyRepository } from "./data/journeyRepository";
 import { useJourneySelection } from "./hooks/useJourneySelection";
 
-const { spots, dayGroups, stats } = journeyRepository;
+const { spots, dayGroups, stats, getById } = journeyRepository;
 
 export default function App() {
   const { token } = theme.useToken();
   const { message } = AntApp.useApp();
-  const { spotId, activeSpot, overviewTick, selectSpot, closeSelection, goHome } =
-    useJourneySelection();
+  const navigate = useNavigate();
+  const { spotId, overviewTick, selectSpot, closeSelection, goHome } = useJourneySelection();
+  const activeSpot = spotId ? getById(spotId) : undefined;
+
+  useEffect(() => {
+    if (spotId && !activeSpot) void navigate("/", { replace: true });
+  }, [spotId, activeSpot, navigate]);
 
   const copyLink = async () => {
     if (!activeSpot) return;

@@ -25,7 +25,7 @@ src/
 │   ├── spots.json              # 景点数据源（唯一数据入口）
 │   └── journeyRepository.ts    # Repository + Facade
 ├── hooks/
-│   └── useJourneySelection.ts  # react-router 选中态与地图全景复位
+│   └── useJourneySelection.ts  # react-router 导航与 overviewTick；数据解析在 App
 ├── map/
 │   └── amap.ts                 # 高德地图 Adapter（CircleMarker、视图切换）
 └── components/                 # Presenter 组件（纯 props 驱动）
