@@ -25,11 +25,5 @@
     "typescript": "6.0.3",
     "vite-plus": "0.2.2"
   },
-  "devEngines": {
-    "packageManager": {
-      "name": "pnpm",
-      "version": "11.10.0",
-      "onFail": "download"
-    }
-  }
+  "packageManager": "pnpm@11.10.0"
 }
