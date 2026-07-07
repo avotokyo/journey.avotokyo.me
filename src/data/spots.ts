@@ -12,6 +12,8 @@ export interface Spot {
   id: string;
   /** 景点名称，显示在侧栏菜单与详情抽屉标题 */
   name: string;
+  /** 所属城市，用于分组统计与详情展示 */
+  city?: string;
   /** 详细地址，可选，显示在详情抽屉 */
   address?: string;
   /** 经纬度坐标 [经度, 纬度]，供高德地图定位 */
@@ -24,6 +26,16 @@ export interface Spot {
   essay?: string;
   /** 照片 URL 列表，可选 */
   photos?: string[];
+  /** 当日天气描述，如 "晴 22℃" */
+  weather?: string;
+  /** 同行者，如 "独自"、"与家人"、"与朋友" */
+  companions?: string;
+  /** 到访花费（人民币元），用于总花费统计 */
+  cost?: number;
+  /** 主观评分，0-5 分（可含 0.5 递增） */
+  rating?: number;
+  /** 标签集合，如 ["历史", "美食"]，用于快速识别景点类型 */
+  tags?: string[];
 }
 
 /**
@@ -87,4 +99,32 @@ export function openSpot(id: string): void {
 /** 关闭景点详情：清空 Hash 回到概览视图 */
 export function closeSpot(): void {
   location.hash = "#/";
+}
+
+/** 旅行整体概览统计 */
+export interface JourneyStats {
+  /** 到访景点总数 */
+  totalSpots: number;
+  /** 涉及的不同日期数（近似"旅行天数"） */
+  totalDays: number;
+  /** 涉及的不同城市数 */
+  totalCities: number;
+  /** 记录到花费的景点合计（人民币元） */
+  totalCost: number;
+}
+
+/**
+ * 汇总景点数据得到旅行概览。
+ * 只统计已录入 cost 字段的景点花费，避免因缺失数据低估。
+ */
+export function computeJourneyStats(list: Spot[]): JourneyStats {
+  const dates = new Set(list.map((s) => s.date));
+  const cities = new Set(list.map((s) => s.city).filter((c): c is string => Boolean(c)));
+  const totalCost = list.reduce((sum, s) => sum + (s.cost ?? 0), 0);
+  return {
+    totalSpots: list.length,
+    totalDays: dates.size,
+    totalCities: cities.size,
+    totalCost,
+  };
 }
