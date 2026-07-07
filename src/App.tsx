@@ -5,42 +5,39 @@
  * 将 props 下发给各 Presenter 组件。
  */
 import { App as AntApp, Alert, Layout, theme } from "antd";
-import { useCallback } from "react";
 
 import { AppHeader } from "./components/AppHeader";
 import { JourneySider } from "./components/JourneySider";
 import { SpotDrawer } from "./components/SpotDrawer";
 import { WorldMap } from "./components/WorldMap";
 import { journeyRepository } from "./data/journeyRepository";
-import type { Spot } from "./domain";
 import { useJourneySelection } from "./hooks/useJourneySelection";
-import { spotShareUrl } from "./routing/paths";
+
+const { spots, dayGroups, stats } = journeyRepository;
 
 export default function App() {
   const { token } = theme.useToken();
   const { message } = AntApp.useApp();
-
   const { spotId, activeSpot, overviewTick, selectSpot, closeSelection, goHome } =
     useJourneySelection();
 
   const copyLink = async () => {
     if (!activeSpot) return;
-    const url = spotShareUrl(activeSpot.id);
-    await navigator.clipboard.writeText(url);
+    await navigator.clipboard.writeText(
+      `${window.location.origin}${window.location.pathname}#/spot/${activeSpot.id}`,
+    );
     message.success("链接已复制");
   };
 
-  const handleSpotClick = useCallback((spot: Spot) => selectSpot(spot.id), [selectSpot]);
-
   return (
     <Layout style={{ height: "100vh", overflow: "hidden", background: token.colorBgLayout }}>
-      <AppHeader stats={journeyRepository.stats} onGoHome={goHome} />
+      <AppHeader stats={stats} onGoHome={goHome} />
 
       <Layout>
         <JourneySider
           spotId={spotId}
-          dayGroups={journeyRepository.dayGroups}
-          totalSpots={journeyRepository.stats.totalSpots}
+          dayGroups={dayGroups}
+          totalSpots={stats.totalSpots}
           onSelectSpot={selectSpot}
         />
 
@@ -49,10 +46,10 @@ export default function App() {
             style={{ position: "relative", padding: 0, height: "100%", overflow: "hidden" }}
           >
             <WorldMap
-              spots={journeyRepository.spots}
+              spots={spots}
               activeSpot={activeSpot}
               overviewTick={overviewTick}
-              onSpotClick={handleSpotClick}
+              onSelectSpot={selectSpot}
             />
 
             {!activeSpot && (

@@ -2,7 +2,7 @@ import { EnvironmentOutlined, LinkOutlined } from "@ant-design/icons";
 import { Button, Drawer, Flex, Typography, theme } from "antd";
 
 import type { Spot } from "../domain";
-import { DRAWER_WIDTH } from "../map";
+import { DRAWER_WIDTH } from "../map/amap";
 import { SpotDetailPanel } from "./SpotDetailPanel";
 
 const { Text } = Typography;

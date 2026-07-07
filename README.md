@@ -15,7 +15,7 @@
 
 ```tree
 src/
-├── main.tsx                    # 入口：ConfigProvider + AntApp + AppRouter
+├── main.tsx                    # 入口：ConfigProvider + AntApp + HashRouter
 ├── App.tsx                     # 容器：组装数据与状态，下发 props
 ├── domain/                     # 领域类型与纯函数（排序/分组/统计）
 │   ├── spot.ts
@@ -24,14 +24,10 @@ src/
 ├── data/
 │   ├── spots.json              # 景点数据源（唯一数据入口）
 │   └── journeyRepository.ts    # Repository + Facade
-├── routing/
-│   ├── router.tsx              # HashRouter + Routes 定义
-│   └── paths.ts                # 路由路径与分享链接
 ├── hooks/
 │   └── useJourneySelection.ts  # react-router 选中态与地图全景复位
 ├── map/
-│   ├── amap.ts                 # 高德地图 Adapter（CircleMarker、视图切换）
-│   └── index.ts
+│   └── amap.ts                 # 高德地图 Adapter（CircleMarker、视图切换）
 └── components/                 # Presenter 组件（纯 props 驱动）
     ├── AppHeader.tsx
     ├── JourneyOverviewStrip.tsx

@@ -5,18 +5,18 @@ import { theme } from "antd";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import type { Spot } from "../domain";
-import { WorldMapController } from "../map";
+import { WorldMapController } from "../map/amap";
 
 export function WorldMap({
   spots,
   activeSpot,
   overviewTick,
-  onSpotClick,
+  onSelectSpot,
 }: {
   spots: Spot[];
   activeSpot?: Spot;
   overviewTick: number;
-  onSpotClick: (spot: Spot) => void;
+  onSelectSpot: (id: string) => void;
 }) {
   const { token } = theme.useToken();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -40,9 +40,11 @@ export function WorldMap({
     controllerRef.current = controller;
     let cancelled = false;
 
-    void controller.init(container, spots, markerStyle, onSpotClick).then(() => {
-      if (!cancelled) setReady(true);
-    });
+    void controller
+      .init(container, spots, markerStyle, (spot) => onSelectSpot(spot.id))
+      .then(() => {
+        if (!cancelled) setReady(true);
+      });
 
     return () => {
       cancelled = true;
@@ -50,7 +52,7 @@ export function WorldMap({
       controllerRef.current = null;
       setReady(false);
     };
-  }, [onSpotClick, spots]);
+  }, [onSelectSpot, spots]);
 
   useEffect(() => {
     if (!ready) return;
