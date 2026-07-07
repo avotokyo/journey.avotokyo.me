@@ -11,25 +11,9 @@
 - **深链接分享**：URL Hash（`#/spot/:id`）驱动选中态，可复制单个景点的可分享链接
 - **无遮罩抽屉**：详情抽屉悬浮于地图之上，地图仍可交互
 
-## 技术栈
-
-React 19 · TypeScript · Vite+ · Ant Design 6 · @ant-design/icons 6 · 高德地图 JS API 2.0
-
-UI 严格遵循 Ant Design v6 默认 design token（`ConfigProvider` + `AntApp`），未自定义主题色：主功能色 `#1677FF`、14px 基础字号、4px 网格、只用 400/600 两种字重。
-
-## 视觉规范对齐
-
-界面按 [Ant Design v6 design.md](https://ant.design/design.md) 的视觉语言构建：
-
-- **三层表面**：`bg-layout` 页面底 / `bg-container` 卡片与侧栏 / `bg-elevated` 抽屉悬浮
-- **一屏一个 primary**：全站唯一 primary 按钮是"复制链接"
-- **预设色仅用于分类**：Tag 用 geekblue / gold / purple / cyan… 表示景点类型，主功能色不复用
-- **平铺优先**：层级靠边框和淡色底承担，阴影只出现在真正悬浮的抽屉与 Alert
-- **图标化控件**：Header、Menu、Descriptions、按钮均配 Outlined 图标
-
 ## 项目结构
 
-```
+```tree
 src/
 ├── main.tsx      # 入口，ConfigProvider 中文 locale + AntApp 上下文
 ├── App.tsx       # Header（品牌+统计条）| Sider（Menu）| Content（地图+抽屉）
@@ -65,16 +49,16 @@ src/
 ## 本地开发
 
 ```bash
-pnpm install
+vp install
 cp .env.example .env   # 填入高德 Web 端 JS API Key
-pnpm dev
+vp run dev
 ```
 
 其他命令：
 
 ```bash
-pnpm build     # 类型检查 + 生产构建
-pnpm preview   # 预览构建产物
+vp run build     # 类型检查 + 生产构建
+vp run preview   # 预览构建产物
 ```
 
 新增标签类目时，请在 `src/App.tsx` 的 `TAG_COLOR_MAP` 中登记预设色映射，避免落回默认灰。
